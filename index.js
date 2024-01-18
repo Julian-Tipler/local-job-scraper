@@ -10,12 +10,14 @@ const folderPath =
   "/Users/juliantipler/Julians_Documents/Coding/CODING PROJECTS/Practice/local-job-scraper/data/scrape-built-in";
 const watcher = chokidar.watch(folderPath, {
   ignored: /^\./,
+  ignoreInitial: true,
   persistent: true,
 });
 
 watcher
   .on("add", () => {
-    fs.readdir(folderPath, "utf8", (err, files) => {
+    console.log("File being added");
+    fs.readdir(folderPath, "utf8", async (err, files) => {
       if (err) {
         console.error(`Error reading directory: ${err.message}`);
         return;
@@ -23,13 +25,13 @@ watcher
 
       const sortedFiles = files.sort((a, b) => {
         return (
-          fs.statSync(`${folderPath}/${b}`).mtime.getTime() -
-          fs.statSync(`${folderPath}/${a}`).mtime.getTime()
+          fs.statSync(`${folderPath}/${a}`).mtime.getTime() -
+          fs.statSync(`${folderPath}/${b}`).mtime.getTime()
         );
       });
-      const recentFiles = sortedFiles.slice(-2);
 
       // Delete all files but the most recent two
+      const recentFiles = sortedFiles.slice(-2);
       sortedFiles.forEach((file) => {
         const filePath = `${folderPath}/${file}`;
 
@@ -44,17 +46,51 @@ watcher
         }
       });
 
-      let newestFile = recentFiles[0];
-      let lastFile = recentFiles[1];
+      // Chat GPT: Read the most recent file as json and compare it to the old file. If there are any new entries in the array (you can compare field "Field2_links" for this), console.log the new entries.
+      // Assuming the most recent file is in recentFiles[1]
+      const mostRecentFile = recentFiles[1];
+      const filePath = `${folderPath}/${mostRecentFile}`;
 
-      // If there is a new job posting send a notification
-      if (newestFile["Field2_links"] !== lastFile["Field2_links"]) {
-        pusher.note(
-          "ujwk6Gf85i8sjuVmm2Ra9Y",
-          "There is a new job!",
-          newestFile["Field2_links"]
-        );
-      }
+      // Read the most recent file as JSON
+      fs.readFile(filePath, "utf8", (readError, data) => {
+        if (readError) {
+          console.error(
+            `Error reading file ${mostRecentFile}: ${readError.message}`
+          );
+          return;
+        }
+
+        try {
+          const recentFileContent = JSON.parse(data);
+
+          const oldFileContent = JSON.parse(
+            fs.readFileSync(`${folderPath}/${recentFiles[0]}`, "utf8")
+          );
+
+          const newEntries = recentFileContent.filter(
+            (recentEntry) =>
+              !oldFileContent.some(
+                (oldEntry) => oldEntry.Field2_links === recentEntry.Field2_links
+              )
+          );
+
+          const linkStrings = newEntries
+            .map((entry) => entry.Field2_links)
+            .join("\n");
+
+          if (newEntries.length > 0) {
+            pusher.note(
+              "ujwk6Gf85i8sjuVmm2Ra9Y",
+              "There are new job(s) available!",
+              `${newEntries.length} new job(s) available! \n\n${linkStrings}`
+            );
+          }
+        } catch (jsonError) {
+          console.error(
+            `Error parsing JSON in file ${mostRecentFile}: ${jsonError.message}`
+          );
+        }
+      });
     });
   })
   .on("error", (error) => console.error(`Watcher error: ${error}`));
