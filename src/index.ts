@@ -1,5 +1,7 @@
-import { setUpWatcher } from "./helpers/set-up-watcher";
+// import { setUpWatcher } from "./helpers/set-up-watcher";
+import dotenv from "dotenv";
+dotenv.config();
 import { setUpChronScrape } from "./helpers/set-up-chron-scrape";
 
-setUpWatcher();
+// setUpWatcher();
 setUpChronScrape();
