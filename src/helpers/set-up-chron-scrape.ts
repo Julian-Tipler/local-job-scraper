@@ -9,7 +9,6 @@ export const setUpChronScrape = () => {
   // Schedule the scrape job to run every 10 minutes (use appropriate cron schedule)
   // cron.schedule("*/10 * * * *", () => {
   cron.schedule("* * * * *", () => {
-    console.log("Scraping BuiltIn");
     scrapeWebsite();
   });
 
@@ -21,7 +20,6 @@ const scrapeWebsite = async () => {
   try {
     const response = await fetch(url);
     const text = await response.text();
-    console.log(text);
 
     const $ = cheerio.load(text);
     const jobCards = $('[data-id="job-card"]');
@@ -32,10 +30,11 @@ const scrapeWebsite = async () => {
       const jobTitle = $(element).find("h2 a").text().trim();
       jobTitles.push({ title: jobTitle });
     });
+    console.log(jobTitles);
 
     const { data, error } = await supabase
       .from("jobs")
-      .upsert(jobTitles, { onConflict: "title" });
+      .upsert(jobTitles, { onConflict: "title" }).select("*");
     console.log("data", data);
     console.log("error", error);
 
