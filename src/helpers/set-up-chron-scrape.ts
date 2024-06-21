@@ -12,12 +12,12 @@ export const setUpChronScrape = () => {
     scrapeWebsite();
   });
 
-  console.info("scraping")
   // Initial call to the scrape function
   scrapeWebsite();
 };
 
 const scrapeWebsite = async () => {
+  console.info("scraping")
   try {
     const response = await fetch(url);
     const text = await response.text();
