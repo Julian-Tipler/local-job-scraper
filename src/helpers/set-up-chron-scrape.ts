@@ -12,6 +12,7 @@ export const setUpChronScrape = () => {
     scrapeWebsite();
   });
 
+  console.info("scraping")
   // Initial call to the scrape function
   scrapeWebsite();
 };
