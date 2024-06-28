@@ -1,6 +1,6 @@
 import PushBullet from "https://esm.sh/pushbullet@3.0.0";
 
-export const post = async (req: Request) => {
+export const post = async () => {
   console.info("******");
   const apiKey = Deno.env.get("PUSHBULLET_API_KEY");
   const pusher = new PushBullet(apiKey);
