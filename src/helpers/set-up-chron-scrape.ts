@@ -1,6 +1,8 @@
 import cron from "node-cron";
 import cheerio from "cheerio";
 import { supabase } from "../clients/supabase";
+import dotenv from "dotenv";
+dotenv.config();
 
 const URL =
   "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
@@ -31,13 +33,8 @@ const scrapeWebsite = async () => {
       const jobTitle = $(element).find("h2 a").text().trim();
       jobTitles.push({ title: jobTitle });
     });
-    console.log(jobTitles);
 
-    const { data, error } = await supabase
-      .from("jobs")
-      .upsert(jobTitles, { onConflict: "title" }).select("*");
-    console.log("data", data);
-    console.log("error", error);
+    insertData(jobTitles);
 
     //delete jobs entries with a created_at date older than 2 days
     const { data: deletedData } = await supabase
@@ -47,5 +44,26 @@ const scrapeWebsite = async () => {
     console.log("deletedData", deletedData);
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
+  }
+};
+
+const insertData = async (jobTitles: any) => {
+  const { data: existingTitlesData } = await supabase
+    .from("jobs")
+    .select("title");
+
+  const existingTitlesSet = new Set(existingTitlesData.map((job) => job.title));
+
+  const newJobTitles = jobTitles.filter((job) =>
+    !existingTitlesSet.has(job.title)
+  );
+
+  if (newJobTitles.length > 0) {
+    await supabase
+      .from("jobs")
+      .insert(newJobTitles)
+      .select("*");
+
+    supabase.functions.invoke("jobs");
   }
 };
