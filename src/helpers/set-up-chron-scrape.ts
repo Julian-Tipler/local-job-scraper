@@ -2,7 +2,7 @@ import cron from "node-cron";
 import cheerio from "cheerio";
 import { supabase } from "../clients/supabase";
 
-const url =
+const URL =
   "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
 
 export const setUpChronScrape = () => {
@@ -17,9 +17,9 @@ export const setUpChronScrape = () => {
 };
 
 const scrapeWebsite = async () => {
-  console.info("scraping")
+  console.info("scraping");
   try {
-    const response = await fetch(url);
+    const response = await fetch(URL);
     const text = await response.text();
 
     const $ = cheerio.load(text);
@@ -40,7 +40,7 @@ const scrapeWebsite = async () => {
     console.log("error", error);
 
     //delete jobs entries with a created_at date older than 2 days
-    const { data: deletedData, error: deletedError } = await supabase
+    const { data: deletedData } = await supabase
       .from("jobs")
       .delete()
       .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
