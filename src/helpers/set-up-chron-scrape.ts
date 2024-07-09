@@ -47,23 +47,31 @@ const scrapeWebsite = async () => {
   }
 };
 
-const insertData = async (jobTitles: any) => {
+const insertData = async (jobTitles: { title: string }[]) => {
   const { data: existingTitlesData } = await supabase
     .from("jobs")
     .select("title");
 
   const existingTitlesSet = new Set(existingTitlesData.map((job) => job.title));
 
-  const newJobTitles = jobTitles.filter((job) =>
-    !existingTitlesSet.has(job.title)
+  const uniqueFilteredSet = jobTitles.filter((job, index, self) =>
+    !existingTitlesSet.has(job.title) &&
+    index === self.findIndex((t) => t.title === job.title)
   );
 
+  console.log("uniqueFilteredArray", uniqueFilteredSet);
+  const newJobTitles = Array.from(uniqueFilteredSet);
+  console.log("newJobTitles", newJobTitles);
+
   if (newJobTitles.length > 0) {
-    await supabase
+    const { data, error } = await supabase
       .from("jobs")
       .insert(newJobTitles)
       .select("*");
-
+    console.log("data from new job insert: ", data);
+    if (error) {
+      console.log("error from new job insert: ", error);
+    }
     supabase.functions.invoke("jobs");
   }
 };
