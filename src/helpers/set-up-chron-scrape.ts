@@ -1,11 +1,10 @@
 import cron from "node-cron";
-import cheerio from "cheerio";
 import { supabase } from "../clients/supabase";
 import dotenv from "dotenv";
+import { scrapeBuiltIn } from "./scrape-built-in";
+import { scrapeDice } from "./scrape-dice";
+import { handleData } from "./handle-data";
 dotenv.config();
-
-const URL =
-  "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
 
 export const setUpChronScrape = () => {
   // Schedule the scrape job to run every 10 minutes (use appropriate cron schedule)
@@ -20,58 +19,17 @@ export const setUpChronScrape = () => {
 
 const scrapeWebsite = async () => {
   console.info("scraping");
-  try {
-    const response = await fetch(URL);
-    const text = await response.text();
 
-    const $ = cheerio.load(text);
-    const jobCards = $('[data-id="job-card"]');
+  const jobs = await Promise.all([scrapeBuiltIn(), scrapeDice()]);
 
-    // Iterate over each job card and extract the text from the <a> tag inside the <h2> tag
-    const jobTitles = [];
-    jobCards.each((index, element) => {
-      const jobTitle = $(element).find("h2 a").text().trim();
-      jobTitles.push({ title: jobTitle });
-    });
+  // Flatten the array of arrays
+  const flattenedJobs: { title: string; url: string }[] = jobs.flat();
 
-    insertData(jobTitles);
-
-    //delete jobs entries with a created_at date older than 2 days
-    const { data: deletedData } = await supabase
-      .from("jobs")
-      .delete()
-      .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
-    console.log("deletedData", deletedData);
-  } catch (error) {
-    console.error(`Error scraping the website: ${error.message}`);
-  }
-};
-
-const insertData = async (jobTitles: { title: string }[]) => {
-  const { data: existingTitlesData } = await supabase
+  handleData(flattenedJobs);
+  //delete jobs entries with a created_at date older than 2 days
+  const { data: deletedData } = await supabase
     .from("jobs")
-    .select("title");
-
-  const existingTitlesSet = new Set(existingTitlesData.map((job) => job.title));
-
-  const uniqueFilteredSet = jobTitles.filter((job, index, self) =>
-    !existingTitlesSet.has(job.title) &&
-    index === self.findIndex((t) => t.title === job.title)
-  );
-
-  console.log("uniqueFilteredArray", uniqueFilteredSet);
-  const newJobTitles = Array.from(uniqueFilteredSet);
-  console.log("newJobTitles", newJobTitles);
-
-  if (newJobTitles.length > 0) {
-    const { data, error } = await supabase
-      .from("jobs")
-      .insert(newJobTitles)
-      .select("*");
-    console.log("data from new job insert: ", data);
-    if (error) {
-      console.log("error from new job insert: ", error);
-    }
-    supabase.functions.invoke("jobs");
-  }
+    .delete()
+    .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
+  console.log("deletedData", deletedData);
 };
