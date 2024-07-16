@@ -4,32 +4,51 @@ import dotenv from "dotenv";
 import { scrapeBuiltIn } from "./scrape-built-in";
 import { scrapeDice } from "./scrape-dice";
 import { handleData } from "./handle-data";
+import { scrapeIndeed } from "./scrape-indeed";
 dotenv.config();
 
-export const setUpChronScrape = () => {
-  // Schedule the scrape job to run every 10 minutes (use appropriate cron schedule)
-  // cron.schedule("*/10 * * * *", () => {
+export const setUpChronScrape = async () => {
+  // Schedule the BuiltIn scrape job to run every minute
   cron.schedule("* * * * *", () => {
-    scrapeWebsite();
+    scrapeBuiltInData();
   });
 
-  // Initial call to the scrape function
-  scrapeWebsite();
-};
+  // Schedule the Dice scrape job to run every 10 minutes
+  cron.schedule("*/10 * * * *", () => {
+    scrapeDiceData();
+  });
 
-const scrapeWebsite = async () => {
-  console.info("scraping");
+  cron.schedule("*/10 * * * *", () => {
+    scrapeIndeedData();
+  });
 
-  const jobs = await Promise.all([scrapeBuiltIn(), scrapeDice()]);
+  // Initial calls to the scrape functions
+  scrapeBuiltInData();
+  scrapeDiceData();
+  scrapeIndeedData();
 
-  // Flatten the array of arrays
-  const flattenedJobs: { title: string; url: string }[] = jobs.flat();
-
-  handleData(flattenedJobs);
-  //delete jobs entries with a created_at date older than 2 days
-  const { data: deletedData } = await supabase
+  await supabase
     .from("jobs")
     .delete()
     .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
-  console.log("deletedData", deletedData);
+};
+
+const scrapeBuiltInData = async () => {
+  console.info("Starting BuiltIn Job 🚧");
+
+  const jobs = await scrapeBuiltIn();
+  handleData(jobs, "BuiltIn");
+};
+
+const scrapeDiceData = async () => {
+  console.info("Starting Dice Job 🎲");
+
+  const jobs = await scrapeDice();
+  handleData(jobs, "Dice");
+};
+
+const scrapeIndeedData = async () => {
+  console.info("Starting Indeed Job 🎩");
+  const jobs = await scrapeIndeed();
+  handleData(jobs, "Indeed");
 };

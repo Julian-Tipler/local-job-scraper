@@ -2,6 +2,7 @@ import { supabase } from "../clients/supabase";
 
 export const handleData = async (
   jobs: { title: string; url: string }[],
+  website: string,
 ) => {
   const { data: existingTitlesData } = await supabase
     .from("jobs")
@@ -15,29 +16,28 @@ export const handleData = async (
   );
 
   const newJobTitles = Array.from(uniqueFilteredSet);
+  console.log("NEW JOBS", newJobTitles);
 
   const { default: PushBullet } = await import("pushbullet");
 
   const apiKey = process.env.PUSHBULLET_API_KEY;
   const pusher = new PushBullet(apiKey);
 
-  pusher.note(
-    "ujwk6Gf85i8sjuVmm2Ra9Y",
-    "There are new job(s) available!",
-    `New job(s) available! \n\n
-    ${newJobTitles.map((job) => `${job.title}: ${job.url}`).join("\n")}`,
-  );
-
   if (newJobTitles.length > 0) {
-    const { data, error } = await supabase
+    pusher.note(
+      "ujwk6Gf85i8sjuVmm2Ra9Y",
+      `There are new job(s) available on ${website}!`,
+      `\n\n
+    ${newJobTitles.map((job) => `${job.title}: ${job.url}`).join("\n")}`,
+    );
+    const { error } = await supabase
       .from("jobs")
       .insert(newJobTitles)
       .select("*");
-    console.log("data from new job insert: ", data);
     if (error) {
-      console.log("error from new job insert: ", error);
+      console.error("error from new job insert: ", error);
     }
-    // supabase.functions.invoke("jobs");
   }
+
   return newJobTitles;
 };

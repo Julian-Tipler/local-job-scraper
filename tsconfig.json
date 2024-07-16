@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "commonjs" /* Specify what module code is generated. */,
-    "rootDir": "./src" /* Specify the root folder within your source files. */ /* Disable generating custom helper functions like '__extends' in compiled output. */,
+    "target": "es2016",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext", // Add this line
     "noEmitOnError": false /* Disable emitting files if any type checking errors are reported. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */ /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
