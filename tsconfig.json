@@ -6,10 +6,11 @@
     "noEmitOnError": false /* Disable emitting files if any type checking errors are reported. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */ /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "types": ["jest"]
   },
   "include": [
     "src/**/*.ts"
   ] /* Specify the root folder within your source files. */,
-  "exclude": ["supabase/**/*"]
+  "exclude": ["supabase/**/*", "**/*.test.ts", "**/*.test.tsx"]
 }

@@ -21,7 +21,7 @@ export const scrapeIndeed = async () => {
     const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector("body", { timeout: 60000 });
-    console.log("Here");
+
     await page.screenshot({ path: "indeed_page.png", fullPage: true });
     page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
     const jobText = await page.evaluate(() => {
@@ -37,7 +37,6 @@ export const scrapeIndeed = async () => {
         };
       });
     });
-    console.log("indeed jobText", jobText);
     return jobText;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);

@@ -1,35 +1,35 @@
 import { supabase } from "../clients/supabase";
+import { notify } from "./notify";
 
 export const handleData = async (
   jobs: { title: string; url: string }[],
   website: string,
 ) => {
-  const { data: existingTitlesData } = await supabase
+  console.info(`Handling data for ${website}`);
+  const { data: existingJobs } = await supabase
     .from("jobs")
-    .select("title");
+    .select("title, url");
 
-  const existingTitlesSet = new Set(existingTitlesData.map((job) => job.title));
+  const existingJobKeySet = new Set(
+    existingJobs.map((job) => `${job.title}-${new URL(job.url).origin}`),
+  );
 
   const uniqueFilteredSet = jobs.filter((job, index, self) =>
-    !existingTitlesSet.has(job.title) &&
-    index === self.findIndex((t) => t.title === job.title)
+    // Doesn't exist in database
+    !existingJobKeySet.has(`${job.title}-${new URL(job.url).origin}`) &&
+    // Doesn't exist in the current array
+    index ===
+      self.findIndex((t) =>
+        `${t.title}-${new URL(t.url).origin}` ===
+          `${job.title}-${new URL(job.url).origin}`
+      )
   );
 
   const newJobTitles = Array.from(uniqueFilteredSet);
-  console.log("NEW JOBS", newJobTitles);
-
-  const { default: PushBullet } = await import("pushbullet");
-
-  const apiKey = process.env.PUSHBULLET_API_KEY;
-  const pusher = new PushBullet(apiKey);
+  console.info("newJobTitles", newJobTitles);
 
   if (newJobTitles.length > 0) {
-    pusher.note(
-      "ujwk6Gf85i8sjuVmm2Ra9Y",
-      `There are new job(s) available on ${website}!`,
-      `\n\n
-    ${newJobTitles.map((job) => `${job.title}: ${job.url}`).join("\n")}`,
-    );
+    notify(newJobTitles, website);
     const { error } = await supabase
       .from("jobs")
       .insert(newJobTitles)
