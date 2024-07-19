@@ -37,6 +37,7 @@ export const scrapeDice = async () => {
     return jobText;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
+    throw(error)
   } finally {
     if (browser) {
       await browser.close();

@@ -14,6 +14,10 @@ export const handleData = async (
     existingJobs.map((job) => `${job.title}-${new URL(job.url).origin}`),
   );
 
+  if(!jobs?.filter) {
+    console.error("jobs.filter is not a function",jobs,website);
+  }
+
   const uniqueFilteredSet = jobs.filter((job, index, self) =>
     // Doesn't exist in database
     !existingJobKeySet.has(`${job.title}-${new URL(job.url).origin}`) &&
