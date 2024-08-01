@@ -37,7 +37,7 @@ const scrapeBuiltInData = async () => {
   console.info("Starting BuiltIn Job 🚧");
   try {
     const jobs = await scrapeBuiltIn();
-    handleData(jobs, "BuiltIn");
+    await handleData(jobs, "BuiltIn");
   } catch (error) {
     console.error("Error scraping BuiltIn: ", error);
   }
@@ -47,7 +47,7 @@ const scrapeDiceData = async () => {
   console.info("Starting Dice Job 🎲");
   try {
     const jobs = await scrapeDice();
-    handleData(jobs, "Dice");
+    await handleData(jobs, "Dice");
   } catch (error) {
     console.error("Error scraping Dice: ", error);
   }
@@ -57,7 +57,7 @@ const scrapeIndeedData = async () => {
   console.info("Starting Indeed Job 🎩");
   try {
     const jobs = await scrapeIndeed();
-    handleData(jobs, "Indeed");
+    await handleData(jobs, "Indeed");
   } catch (error) {
     console.error("Error scraping Indeed: ", error);
   }
