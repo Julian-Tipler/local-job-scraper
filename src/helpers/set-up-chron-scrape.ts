@@ -37,7 +37,6 @@ const scrapeBuiltInData = async () => {
   console.info("Starting BuiltIn Job 🚧");
   try {
     const jobs = await scrapeBuiltIn();
-    await handleData(jobs, "BuiltIn");
   } catch (error) {
     console.error("Error scraping BuiltIn: ", error);
   }
