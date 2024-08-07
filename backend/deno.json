@@ -9,7 +9,7 @@
   "importMap": "./supabase/functions/import_map.json",
   "tasks": {
     "deploy": "supabase functions deploy --import-map ./supabase/functions/import_map.json && supabase secrets set --env-file supabase/prod.env",
-    "local": "supabase start && supabase functions serve --env-file ./supabase/.env",
+    "local": "supabase start && supabase functions serve --env-file .env",
     "gentypes": "npx -y supabase gen types typescript --project-id ywdbdzcdnpusijyanlbj --schema public > ./supabase/functions/_shared/types/supabase.ts && deno run --allow-read --allow-write ./supabase/functions/_shared/types/scripts/process-types.ts",
     "scrape": "deno run  --allow-read --allow-net --allow-env supabase/scraping/scrape.ts",
     "stripe": "stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook",

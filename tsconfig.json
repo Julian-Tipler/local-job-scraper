@@ -12,5 +12,5 @@
   "include": [
     "src/**/*.ts"
   ] /* Specify the root folder within your source files. */,
-  "exclude": ["supabase/**/*", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["backend/**/*", "**/*.test.ts", "**/*.test.tsx"]
 }
