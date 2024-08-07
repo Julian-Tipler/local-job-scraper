@@ -4,8 +4,25 @@ import { CORSResponse } from "../../shared/utils/cors.ts";
 import { validate } from "../../shared/utils/validate.ts";
 import { apiError } from "../../shared/utils/errors.ts";
 import { ErrorCodes } from "../../shared/utils/errors.ts";
+import { supabase } from "../../shared/utils/clients/supabase.ts";
+import { coherePrompt } from "./cohere-prompt.ts";
 
-// https://supabase.com/docs/guides/functions/examples/send-emails
+type Bullet = {
+  id: number;
+  content: string;
+  experience: number;
+  created_at: string;
+};
+
+type Job = {
+  id: number;
+  title: string;
+  url: string;
+  description: string;
+  created_at: string;
+};
+
+const COHERE_API_KEY = Deno.env.get("COHERE_API_KEY");
 
 interface Req {
   body: {
@@ -25,22 +42,59 @@ const schema: ObjectSchema<Req> = object({
 
 const handler = async (req: CompleteRequest): Promise<Response> => {
   try {
-    const { name, email, message } = req.body;
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const { jobId } = req.body;
 
-    await fetch("https://api.resend.com/emails/batch", {
+    const { data: bullets, error: bulletsError }: {
+      data: Bullet[] | null;
+      error: any;
+    } = await supabase.from(
+      "bullets",
+    ).select("*");
+
+    if (!bullets || bulletsError) {
+      return apiError(ErrorCodes.SERVER_ERROR, {
+        error: bulletsError.message ?? "Error",
+      });
+    }
+    // select single job
+    const { data: job, error: jobsError }: {
+      data: Job | null;
+      error: any;
+    } = await supabase.from("jobs").select(
+      "*",
+    ).eq("id", jobId).single();
+
+    if (!job || jobsError) {
+      return apiError(ErrorCodes.SERVER_ERROR, {
+        error: jobsError.message ?? "Error",
+      });
+    }
+
+    let bulletsString: string = "";
+
+    bullets.map((bullet) => {
+      bulletsString += `* ${bullet.content}\n`;
+    });
+
+    const message = coherePrompt + "job description:\n" + job.description +
+      bulletsString;
+
+    const chatBody = JSON.stringify({
+      message: message,
+      temperature: 0.2,
+    });
+
+    const response = await fetch("https://api.cohere.ai/v1/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${COHERE_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "WisePilot Contact Form Request <onboarding@resend.dev>",
-        to: ["support@wisepilot.io"],
-        subject: `New message from ${name} (${email})`,
-        html: `<p>${message}</p>`,
-      }),
+      body: chatBody,
     });
+
+    const data = await response.json();
+    console.log(data);
 
     return new CORSResponse(JSON.stringify("ok"));
   } catch (error) {
