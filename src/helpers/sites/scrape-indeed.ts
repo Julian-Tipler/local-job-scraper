@@ -24,7 +24,7 @@ export const scrapeIndeed = async () => {
 
     await page.screenshot({ path: "indeed_page.png", fullPage: true });
     page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-    const jobs = await page.evaluate(() => {
+    const jobs:{ title: string; url: string }[] = await page.evaluate(() => {
       const jobElements = Array.from(
         document.querySelectorAll("a.jcs-JobTitle"),
       );

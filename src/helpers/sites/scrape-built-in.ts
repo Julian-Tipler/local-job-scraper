@@ -14,8 +14,13 @@ export const scrapeBuiltIn = async () => {
     // Iterate over each job card and extract the text from the <a> tag inside the <h2> tag
     const jobs: { title: string; url: string }[] = [];
     jobCards.each((index, element) => {
-      const jobTitle = $(element).find("h2 a").text().trim();
-      jobs.push({ title: jobTitle, url: URL });
+      const job = $(element).find("h2 a");
+      const jobTitle = job.text().trim();
+      jobs.push({
+        title: jobTitle,
+        url: `https://www.builtinaustin.com${job.attr("href")}`,
+      });
+      console.log(jobs)
     });
 
     return jobs;

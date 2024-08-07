@@ -21,7 +21,7 @@ export const scrapeDice = async () => {
 
     // for debugging
     page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-    const jobs = await page.evaluate(() => {
+    const jobs: { title: string; url: string }[] = await page.evaluate(() => {
       const jobElements = Array.from(
         document.querySelectorAll("a.card-title-link"),
       );
@@ -37,7 +37,7 @@ export const scrapeDice = async () => {
     return jobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
-    throw(error)
+    throw error;
   } finally {
     if (browser) {
       await browser.close();
