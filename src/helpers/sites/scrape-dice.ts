@@ -1,13 +1,9 @@
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import puppeteer from "puppeteer-extra";
+import puppeteer from "puppeteer";
 
-puppeteer.use(StealthPlugin());
-
-// currently blocked by cloudflare
 const URL =
-  "https://www.indeed.com/jobs?q=software+engineer&l=austin%2C+tx&fromage=1&sc=0kf%3Aattr%286M28R%7C6XQ9P%7C84K74%7CFGY89%7CJB2WC%7CWD7PP%7CX62BT%7CY7U37%252COR%29%3B&vjk=750a4de96f4a9e32";
+  "https://www.dice.com/jobs?q=software%20engineering&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=20&filters.postedDate=ONE&filters.workplaceTypes=Remote&filters.employmentType=FULLTIME&language=en";
 
-export const scrapeIndeed = async () => {
+export const scrapeDice = async () => {
   let browser;
   try {
     browser = await puppeteer.launch({
@@ -20,26 +16,28 @@ export const scrapeIndeed = async () => {
     });
     const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2", timeout: 60000 });
-    await page.waitForSelector("body", { timeout: 60000 });
+    await page.waitForSelector("a.card-title-link", { timeout: 60000 });
+    await page.screenshot({ path: "dice_page.png", fullPage: true });
 
-    await page.screenshot({ path: "indeed_page.png", fullPage: true });
+    // for debugging
     page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-    const jobText = await page.evaluate(() => {
+    const jobs = await page.evaluate(() => {
       const jobElements = Array.from(
-        document.querySelectorAll("a.jcs-JobTitle"),
+        document.querySelectorAll("a.card-title-link"),
       );
 
       return jobElements.map((element) => {
         const anchor = element as HTMLAnchorElement;
         return {
           title: element.textContent ? element.textContent.trim() : "",
-          url: anchor.href,
+          url: "https://www.dice.com/job-detail/" + anchor.id,
         };
       });
     });
-    return jobText;
+    return jobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
+    throw(error)
   } finally {
     if (browser) {
       await browser.close();

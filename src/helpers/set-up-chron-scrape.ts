@@ -1,10 +1,10 @@
 import cron from "node-cron";
 import { supabase } from "../clients/supabase";
 import dotenv from "dotenv";
-import { scrapeBuiltIn } from "./scrape-built-in";
-import { scrapeDice } from "./scrape-dice";
+import { scrapeBuiltIn } from "./sites/scrape-built-in";
+import { scrapeDice } from "./sites/scrape-dice";
 import { handleData } from "./handle-data";
-import { scrapeIndeed } from "./scrape-indeed";
+import { scrapeIndeed } from "./sites/scrape-indeed";
 dotenv.config();
 
 export const setUpChronScrape = async () => {
