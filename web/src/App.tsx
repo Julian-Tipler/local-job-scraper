@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./clients/supabase";
 import { Job } from "./components/Job";
 import { Job as JobType } from "./utils/types";
+import { ExperienceStepper } from "./components/ExperienceStepper";
 
 function App() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -29,11 +30,10 @@ function App() {
   console.log(job);
   return (
     <div className="flex justify-center gap-12">
-      <div className="flex-1">
-        <h1>Experiences:</h1>
-        {/* <ExperienceStepper /> */}
+      <div className="flex flex-col flex-1 h-screen p-4">
+        <ExperienceStepper job={job} />
       </div>
-      <div className="flex-1 h-screen overflow-scroll">
+      <div className="flex-1 h-screen p-4">
         <Job job={job} />
       </div>
     </div>

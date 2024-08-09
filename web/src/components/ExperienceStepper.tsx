@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../clients/supabase";
-import { Experience } from "../utils/types";
+import { Experience as ExperienceType } from "../utils/types";
+import { Job } from "../utils/types";
+import Experience from "./Experience";
 
-export const ExperienceStepper = () => {
+export const ExperienceStepper = ({ job }: { job: Job }) => {
   const [step, setStep] = useState(0);
 
-  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [experiences, setExperiences] = useState<ExperienceType[]>([]);
 
   useEffect(() => {
     const fetchExperiences = async () => {
@@ -35,22 +37,40 @@ export const ExperienceStepper = () => {
     setStep((prevStep) => prevStep - 1);
   };
 
-  const { title } = experiences[step];
   if (!experiences.length) return <div>Loading...</div>;
   return (
-    <div>
-      <h1>{title}</h1>
-      <ExperienceComponent title={title} />
-      <button onClick={handlePrevious} disabled={step === 0}>
-        Previous
-      </button>
-      <button onClick={handleNext} disabled={step === experiences.length - 1}>
-        Next
-      </button>
+    <div className="flex flex-1 flex-col">
+      <h1 className="px-4 ">Experience</h1>
+      <div className="experience-container flex-1 p-4">
+        {experiences.map((experience, i) => {
+          return <Experience experience={experience} selected={i === step} />;
+        })}
+      </div>
+
+      <div className="button-container flex gap-4">
+        <button
+          onClick={handlePrevious}
+          disabled={step === 0}
+          className={`px-4 py-2 rounded ${
+            step === 0
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700"
+          }`}
+        >
+          Previous
+        </button>
+        <button
+          onClick={handleNext}
+          disabled={step === experiences.length - 1}
+          className={`px-4 py-2 rounded ${
+            step === experiences.length - 1
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700"
+          }`}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
-};
-
-const ExperienceComponent = ({ title }: { title: string }) => {
-  return <div>{title} component</div>;
 };
