@@ -1,16 +1,14 @@
 import { ExperienceStepper } from "./components/ExperienceStepper";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { supabase } from "./clients/supabase";
-import { JobDescription } from "./components/JobDescription";
-import { Job } from "./utils/types";
+import { Job } from "./components/Job";
+import { Job as JobType } from "./utils/types";
 
 function App() {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const searchParams = new URLSearchParams(window.location.search);
   const jobId = searchParams.get("job");
 
-  const [job, setJob] = useState<Job | null>(null);
+  const [job, setJob] = useState<JobType | null>(null);
 
   useEffect(() => {
     supabase
@@ -29,18 +27,18 @@ function App() {
   if (!job) {
     return <div>Loading...</div>;
   }
-
+  console.log(job);
   return (
-    <>
+    <div className="flex">
+      <h1 className="text-3xl font-bold underline">Hello world!</h1>
       <div>
         <h2>Experiences:</h2>
-        <ExperienceStepper />
+        {/* <ExperienceStepper /> */}
       </div>
       <div>
-        <h2>Job description:</h2>
-        <JobDescription description={job.description} />
+        <Job job={job} />
       </div>
-    </>
+    </div>
   );
 }
 
