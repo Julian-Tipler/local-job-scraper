@@ -43,7 +43,15 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
       <h1 className="px-4 ">Experience</h1>
       <div className="experience-container flex-1 p-4">
         {experiences.map((experience, i) => {
-          return <Experience experience={experience} selected={i === step} />;
+          if (i > 0) return null;
+          return (
+            <Experience
+              key={experience.id}
+              experience={experience}
+              selected={i === step}
+              job={job}
+            />
+          );
         })}
       </div>
 

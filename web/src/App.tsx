@@ -27,7 +27,7 @@ function App() {
   if (!job) {
     return <div>Loading...</div>;
   }
-  console.log(job);
+
   return (
     <div className="flex justify-center gap-12">
       <div className="flex flex-col flex-1 h-screen p-4">
