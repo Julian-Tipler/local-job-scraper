@@ -3,8 +3,8 @@ import { DndProvider, useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { supabase } from "../clients/supabase";
 import { Bullet, Experience as ExperienceType, Job } from "../utils/types";
-import { cohere } from "../utils/clients/cohere";
 import { rankBulletsPrompt } from "../utils/rank-bullets-prompt";
+import { openai } from "../utils/clients/openai";
 
 const ItemTypes = {
   BULLET: "bullet",
@@ -35,7 +35,7 @@ const Experience = ({
         }
 
         if (bullets) {
-          const response = await openai.chat.completions.create({
+          const chatCompletion = await openai.chat.completions.create({
             messages: [
               {
                 role: "system",
@@ -44,14 +44,15 @@ const Experience = ({
             ],
             model: "gpt-4o",
           });
-    
 
-          console.log("Cohere Response\n", response.generations);
-          if (!response?.generations[0].text) {
+          const responseText = chatCompletion?.choices[0]?.message.content;
+
+          console.log("OpenAI Response\n", responseText);
+          if (!responseText) {
             throw new Error("general issue with cohere response");
           }
 
-          const split = response.generations[0].text.split("---");
+          const split = responseText.split("---");
           if (!(split.length === 2)) {
             throw new Error("Issue with cohere response text");
           }

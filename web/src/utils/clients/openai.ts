@@ -1,7 +1,7 @@
-// init openai client for vite
+import OpenAI from "openai";
 
-import { createClient } from "@openai/api";
-
-export const openai = createClient({
+export const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  //TODO if I release for public use remove this
+  dangerouslyAllowBrowser: true,
 });
