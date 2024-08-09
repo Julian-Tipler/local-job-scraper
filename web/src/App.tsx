@@ -29,11 +29,11 @@ function App() {
   }
 
   return (
-    <div className="flex justify-center gap-12">
-      <div className="flex flex-col flex-1 h-screen p-4">
+    <div className="flex h-screen justify-center gap-12">
+      <div className="flex flex-col w-1/2 h-screen p-4">
         <ExperienceStepper job={job} />
       </div>
-      <div className="flex-1 h-screen p-4">
+      <div className="w-1/2 flex flex-col p-4">
         <Job job={job} />
       </div>
     </div>

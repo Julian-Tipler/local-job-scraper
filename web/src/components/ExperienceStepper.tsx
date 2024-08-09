@@ -39,11 +39,10 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
 
   if (!experiences.length) return <div>Loading...</div>;
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-col h-full">
       <h1 className="px-4 ">Experience</h1>
-      <div className="experience-container flex-1 p-4">
+      <div className="experience-container overflow-y-auto flex-1 p-4 border">
         {experiences.map((experience, i) => {
-          if (i > 0) return null;
           return (
             <Experience
               key={experience.id}
@@ -54,8 +53,8 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
           );
         })}
       </div>
-
-      <div className="button-container flex gap-4">
+      {/* Navigation Buttons */}
+      <div className="button-container flex gap-4 p-4">
         <button
           onClick={handlePrevious}
           disabled={step === 0}
