@@ -19,7 +19,7 @@ export const scrapeBuiltIn = async () => {
     // Iterate over each job card and extract the text from the <a> tag inside the <h2> tag
     const jobs: { title: string; url: string; description: string }[] = [];
     jobCards.each((index, element) => {
-      if (index >= 5) return false;
+      if (index >= 6) return false;
       const job = $(element).find("h2 a");
       const jobTitle = job.text().trim();
       jobs.push({
@@ -29,14 +29,12 @@ export const scrapeBuiltIn = async () => {
       });
     });
 
-    const newJobsOne = await filterExistingJobs(jobs, WEBSITE);
-    const newJobs = newJobsOne.slice(0, 15);
+    const newJobs = await filterExistingJobs(jobs, WEBSITE);
 
     const browser = await puppeteer.use(StealthPlugin()).launch({
       headless: true,
     });
 
-    // Fetch the descriptions for each page
     if (newJobs.length > 0) {
       const page = await browser.newPage();
 

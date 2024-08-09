@@ -33,7 +33,7 @@ function App() {
         <h1>Experiences:</h1>
         {/* <ExperienceStepper /> */}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 h-screen overflow-scroll">
         <Job job={job} />
       </div>
     </div>
