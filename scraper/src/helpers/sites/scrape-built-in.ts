@@ -1,8 +1,8 @@
 import cheerio from "cheerio";
-import { supabase } from "../../clients/supabase";
 import { filterExistingJobs } from "../filterExistingJobs";
-import { notify } from "../notify";
 import { handleNewJobs } from "./handle-new-jobs";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 const WEBSITE = "BuiltIn";
 const URL =
@@ -19,6 +19,7 @@ export const scrapeBuiltIn = async () => {
     // Iterate over each job card and extract the text from the <a> tag inside the <h2> tag
     const jobs: { title: string; url: string; description: string }[] = [];
     jobCards.each((index, element) => {
+      if (index >= 5) return false;
       const job = $(element).find("h2 a");
       const jobTitle = job.text().trim();
       jobs.push({
@@ -29,17 +30,31 @@ export const scrapeBuiltIn = async () => {
     });
 
     const newJobsOne = await filterExistingJobs(jobs, WEBSITE);
-    const newJobs = newJobsOne.slice(0, 5);
+    const newJobs = newJobsOne.slice(0, 15);
+
+    const browser = await puppeteer.use(StealthPlugin()).launch({
+      headless: true,
+    });
 
     // Fetch the descriptions for each page
     if (newJobs.length > 0) {
-      for (const job of newJobs) {
-        try {
-          const jobResponse = await fetch(job.url);
-          const jobText = await jobResponse.text();
-          const $$ = cheerio.load(jobText);
-          const jobDescriptionHtml = $$(".job-description").html();
+      const page = await browser.newPage();
 
+      for (const job of newJobs) {
+        console.info(`Fetching job description for ${job.title}`);
+        try {
+          await page.goto(job.url, { waitUntil: "domcontentloaded" });
+          const number = Math.floor(Math.random() * 1000) + 1;
+          await new Promise((resolve) => setTimeout(resolve, 1000 + number));
+          await page.screenshot({
+            path: `${new Date()}.png`,
+            fullPage: true,
+          });
+
+          const jobDescriptionHtml = await page.evaluate(() => {
+            const jobDescElement = document.querySelector(".job-description");
+            return jobDescElement ? jobDescElement.innerHTML : "";
+          });
           if (jobDescriptionHtml) {
             // Replace certain HTML tags with line breaks
             const jobDescription = jobDescriptionHtml
@@ -47,7 +62,6 @@ export const scrapeBuiltIn = async () => {
               .replace(/<\/p>/gi, "\n\n")
               .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
               .trim();
-            console.log(jobDescription);
             job.description = jobDescription;
           }
           // Add job description to the job object
@@ -58,7 +72,6 @@ export const scrapeBuiltIn = async () => {
         }
       }
     }
-    console.log(newJobs);
 
     handleNewJobs(newJobs, WEBSITE);
   } catch (error) {

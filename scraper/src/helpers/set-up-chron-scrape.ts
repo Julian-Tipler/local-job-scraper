@@ -14,13 +14,13 @@ export const setUpChronScrape = async () => {
   });
 
   // Schedule the Dice scrape job to run every 10 minutes
-  cron.schedule("*/10 * * * *", () => {
-    scrapeDiceData();
-  });
+  // cron.schedule("*/10 * * * *", () => {
+  //   scrapeDiceData();
+  // });
 
-  cron.schedule("*/10 * * * *", () => {
-    scrapeIndeedData();
-  });
+  // cron.schedule("*/10 * * * *", () => {
+  //   scrapeIndeedData();
+  // });
 
   // Initial calls to the scrape functions
   scrapeBuiltInData();
@@ -56,6 +56,10 @@ const scrapeIndeedData = async () => {
   console.info("Starting Indeed Job 🎩");
   try {
     const jobs = await scrapeIndeed();
+    if (!jobs) {
+      console.error("No jobs found from Indeed");
+      return;
+    }
     await handleData(jobs, "Indeed");
   } catch (error) {
     console.error("Error scraping Indeed: ", error);

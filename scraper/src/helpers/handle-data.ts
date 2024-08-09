@@ -37,19 +37,24 @@ export const handleData = async (
       )
   );
 
-  const newJobTitles = Array.from(uniqueFilteredSet);
-  console.info("newJobTitles", newJobTitles);
+  const newJobs = Array.from(uniqueFilteredSet);
+  console.info("newJobs", newJobs);
 
-  if (newJobTitles.length > 0) {
-    notify(newJobTitles, website);
-    const { error } = await supabase
+  if (newJobs.length > 0) {
+    const { data, error } = await supabase
       .from("jobs")
-      .insert(newJobTitles)
+      .insert(newJobs)
       .select("*");
+
+    if (error || !data) {
+      console.error("error from new job insert: ", error);
+      throw error;
+    }
+    notify(data, website);
     if (error) {
       console.error("error from new job insert: ", error);
     }
   }
 
-  return newJobTitles;
+  return newJobs;
 };
