@@ -10,7 +10,7 @@
     "types": ["jest"]
   },
   "include": [
-    "src/**/*.ts"
+    "scraper/src/**/*.ts"
   ] /* Specify the root folder within your source files. */,
   "exclude": ["backend/**/*", "**/*.test.ts", "**/*.test.tsx"]
 }

@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+div {
+  font-size: small;
+}
+
+h1 {
+  font-size: large;
+}
+
+h2 {
+  font-size: medium;
+}
+
+h3 {
+  font-size: small;
+}

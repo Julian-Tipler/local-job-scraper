@@ -28,7 +28,8 @@ export const scrapeBuiltIn = async () => {
       });
     });
 
-    const newJobs = await filterExistingJobs(jobs, WEBSITE);
+    const newJobsOne = await filterExistingJobs(jobs, WEBSITE);
+    const newJobs = newJobsOne.slice(0, 5);
 
     // Fetch the descriptions for each page
     if (newJobs.length > 0) {
@@ -37,10 +38,19 @@ export const scrapeBuiltIn = async () => {
           const jobResponse = await fetch(job.url);
           const jobText = await jobResponse.text();
           const $$ = cheerio.load(jobText);
-          const jobDescription = $$(".job-description").text().trim();
+          const jobDescriptionHtml = $$(".job-description").html();
 
+          if (jobDescriptionHtml) {
+            // Replace certain HTML tags with line breaks
+            const jobDescription = jobDescriptionHtml
+              .replace(/<br\s*\/?>/gi, "\n")
+              .replace(/<\/p>/gi, "\n\n")
+              .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
+              .trim();
+            console.log(jobDescription);
+            job.description = jobDescription;
+          }
           // Add job description to the job object
-          job.description = jobDescription;
         } catch (jobError) {
           console.error(
             `Error fetching job description for ${job.title}: ${jobError.message}`,
@@ -48,6 +58,7 @@ export const scrapeBuiltIn = async () => {
         }
       }
     }
+    console.log(newJobs);
 
     handleNewJobs(newJobs, WEBSITE);
   } catch (error) {

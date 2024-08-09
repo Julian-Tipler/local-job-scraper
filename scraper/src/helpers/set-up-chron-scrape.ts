@@ -24,8 +24,8 @@ export const setUpChronScrape = async () => {
 
   // Initial calls to the scrape functions
   scrapeBuiltInData();
-  scrapeDiceData();
-  scrapeIndeedData();
+  // scrapeDiceData();
+  // scrapeIndeedData();
 
   await supabase
     .from("jobs")

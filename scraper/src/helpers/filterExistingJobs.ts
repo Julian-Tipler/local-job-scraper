@@ -39,7 +39,5 @@ export const filterExistingJobs = async (
 
   const newJobs = Array.from(uniqueFilteredSet);
 
-  console.info("new job titles", newJobs);
-
   return newJobs;
 };

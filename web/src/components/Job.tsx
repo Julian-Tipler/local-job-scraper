@@ -3,9 +3,8 @@ import { Job as JobType } from "../utils/types";
 export const Job = ({ job }: { job: JobType }) => {
   return (
     <>
-      <h2>Job </h2>
-      <h3>{job.title}</h3>
-      <div>{job.description}</div>
+      <h1 className="px-4">{job.title}</h1>
+      <div className="p-4">{job.description}</div>
     </>
   );
 };

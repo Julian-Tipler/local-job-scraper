@@ -1,4 +1,3 @@
-import { ExperienceStepper } from "./components/ExperienceStepper";
 import { useEffect, useState } from "react";
 import { supabase } from "./clients/supabase";
 import { Job } from "./components/Job";
@@ -29,13 +28,12 @@ function App() {
   }
   console.log(job);
   return (
-    <div className="flex">
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <div>
-        <h2>Experiences:</h2>
+    <div className="flex justify-center gap-12">
+      <div className="flex-1">
+        <h1>Experiences:</h1>
         {/* <ExperienceStepper /> */}
       </div>
-      <div>
+      <div className="flex-1">
         <Job job={job} />
       </div>
     </div>
