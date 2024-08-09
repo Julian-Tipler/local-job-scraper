@@ -19,6 +19,7 @@ const Experience = ({
   selected: boolean;
   job: Job;
 }) => {
+
   const [rankedBullets, setRankedBullets] = useState<Bullet[]>([]);
 
   useEffect(() => {
@@ -146,25 +147,24 @@ const Experience = ({
   if (!rankedBullets.length) {
     return <div>loading...</div>;
   }
+  
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <>
-        {/* Title */}
-        <h2 className="pb-4">{experience.title}</h2>
-        {/* Scrollable */}
+      {/* Title */}
+      <h2 className="pb-4">{experience.title}</h2>
+      {/* Scrollable */}
 
-        <ul className="overflow-y-auto">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-            <li className="h-72">item</li>
-          ))}
-        </ul>
-        {/* <ul className="gap-2 overflow-y-auto">
+      <ul className="flex-1 overflow-auto bg-gray-100 p-4 border">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
+          <li className="h-72">item</li>
+        ))}
+      </ul>
+      {/* <ul className="gap-2 overflow-y-auto">
             {rankedBullets.map((bullet, index) => (
               <BulletItem key={bullet.id} bullet={bullet} index={index} />
             ))}
           </ul> */}
-      </>
     </DndProvider>
   );
 };

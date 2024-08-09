@@ -30,9 +30,8 @@ function App() {
 
   return (
     <div className="flex h-screen justify-center gap-12">
-      <div className="flex flex-col w-1/2 h-screen p-4">
-        <ExperienceStepper job={job} />
-      </div>
+      {/* Left Column */}
+      <ExperienceStepper job={job} />
       <div className="w-1/2 flex flex-col p-4">
         <Job job={job} />
       </div>
