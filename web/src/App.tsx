@@ -30,15 +30,13 @@ function App() {
 
   return (
     <div className="flex h-screen justify-center gap-12">
-      {/* Left Column */}
       <ExperienceStepper job={job} />
       <div className="w-1/2 flex flex-col p-4">
-        <Job job={job} />
+        <Job job={job} />   
       </div>
     </div>
   );
 }
-
 export default App;
 
 // AKfycbwXfEk9WGUbkEmUdII7YuqFRg1h8QYEFP1rzmTVAIVjZmOlYnL2eWQOr-l-xIZgQEja

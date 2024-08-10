@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { DndProvider, useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { supabase } from "../clients/supabase";
 import { Bullet, Experience as ExperienceType, Job } from "../utils/types";
 import { rankBulletsPrompt } from "../utils/rank-bullets-prompt";
 import { openai } from "../utils/clients/openai";
+import { useSubmissionContext } from "../contexts/SubmissionContext";
 
 const ItemTypes = {
   BULLET: "bullet",
@@ -19,7 +20,9 @@ const Experience = ({
   selected: boolean;
   job: Job;
 }) => {
-  const [rankedBullets, setRankedBullets] = useState<Bullet[]>([]);
+  const { form, setForm } = useSubmissionContext();
+
+  const entry = form[parseInt(experience.id) - 1];
 
   useEffect(() => {
     const fetchBullets = async () => {
@@ -58,13 +61,17 @@ const Experience = ({
           }
 
           // console.log("cohere ranking", split[1]);
-          const ranking = split[1]
+          const ranking: Bullet[] = split[1]
             .trim()
             .split(",")
             .map((rank: string) => {
               return bullets[parseInt(rank) - 1];
             });
-          setRankedBullets(ranking);
+          setForm((prev: Bullet[][]) => {
+            const dupeNewForm = [...prev];
+            dupeNewForm[parseInt(experience.id) - 1] = ranking;
+            return dupeNewForm;
+          });
         }
       } catch (error) {
         console.error("Error fetching bullets:", error);
@@ -74,11 +81,15 @@ const Experience = ({
   }, []);
 
   const moveBullet = (dragIndex: number, hoverIndex: number) => {
-    const dragBullet = rankedBullets[dragIndex];
-    const newBullets = [...rankedBullets];
+    const dragBullet = entry[dragIndex];
+    const newBullets = [...entry];
     newBullets.splice(dragIndex, 1);
     newBullets.splice(hoverIndex, 0, dragBullet);
-    setRankedBullets(newBullets);
+    setForm((prev: Bullet[][]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      return dupeNewForm;
+    });
   };
 
   const BulletItem = ({ bullet, index }: { bullet: Bullet; index: number }) => {
@@ -138,29 +149,26 @@ const Experience = ({
     );
   };
 
-  console.log(rankedBullets);
   if (!selected) {
     return null;
   }
 
-  if (!rankedBullets.length) {
+  if (!entry?.length) {
     return <div>loading...</div>;
   }
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <main className="flex flex-col flex-1 p-4 border border-red-300 overflow-hidden">
+      <main className="flex flex-col flex-1 p-4 border overflow-hidden">
         <h2>Experience Title</h2>
-        <ul className="flex-1 overflow-y-auto">
-          {rankedBullets.map((bullet, index) => (
+        <ul className="flex-1 overflow-y-auto flex flex-col gap-1">
+          {entry.map((bullet, index) => (
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
           ))}
         </ul>
       </main>
     </DndProvider>
   );
-
-
 };
 
 export default Experience;
