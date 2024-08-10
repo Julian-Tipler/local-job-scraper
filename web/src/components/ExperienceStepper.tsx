@@ -78,6 +78,17 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
           >
             Next
           </button>
+          <button
+            onClick={handleNext}
+            disabled={step !== experiences.length - 1}
+            className={`px-4 py-2 rounded ${
+              step !== experiences.length - 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-700"
+            }`}
+          >
+            Submit
+          </button>
         </div>
       </div>
     </SubmissionContextProvider>
