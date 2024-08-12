@@ -44,12 +44,12 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
       <div className="flex flex-col w-1/2 p-4 h-full">
         <div>
           <a href={urls.docUrl} target="_blank" rel="noopener noreferrer">
-            {urls.docUrl}
+            Doc Url
           </a>
         </div>
         <div>
           <a href={urls.pdfUrl} target="_blank" rel="noopener noreferrer">
-            {urls.pdfUrl}
+            PDF Url
           </a>
         </div>
       </div>

@@ -43,6 +43,7 @@ export function SubmissionContextProvider({
         return bullet.content;
       });
     });
+    console.log(bulletContent);
     const sanitizedData = bulletContent.map((bullet) =>
       bullet.map((text) => text.replace(/%/g, "__PERCENT__"))
     );

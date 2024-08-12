@@ -13,7 +13,7 @@ export const notify = async (
     `\n\n
     ${
       newJobTitles.map((job) =>
-        `${job.title}: ${job.url}\nhttp://localhost:5173/?job=${job.id}`
+        `${job.title}:\nhttp://localhost:5173/?job=${job.id}`
       ).join("\n")
     }`,
   );
