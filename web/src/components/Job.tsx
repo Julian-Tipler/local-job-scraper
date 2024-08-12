@@ -3,7 +3,7 @@ import { Job as JobType } from "../utils/types";
 export const Job = ({ job }: { job: JobType }) => {
   const formattedDescription = job.description
     .split("\n")
-    .map((line, index) => <p key={index}>{line}</p>);
+    .map((line, index) => <p key={`paragraph-${index}`}>{line}</p>);
 
   return (
     <div className="flex flex-col h-full">

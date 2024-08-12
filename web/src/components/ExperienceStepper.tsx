@@ -8,7 +8,7 @@ import { useSubmissionContext } from "../contexts/SubmissionContext";
 export const ExperienceStepper = ({ job }: { job: Job }) => {
   const [step, setStep] = useState(0);
   const [experiences, setExperiences] = useState<ExperienceType[]>([]);
-  const { submitForm } = useSubmissionContext();
+  const { submitForm, form, submitted, urls } = useSubmissionContext();
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
@@ -39,6 +39,22 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
 
   if (!experiences.length) return <div>Loading...</div>;
 
+  if (submitted) {
+    return (
+      <div className="flex flex-col w-1/2 p-4 h-full">
+        <div>
+          <a href={urls.docUrl} target="_blank" rel="noopener noreferrer">
+            {urls.docUrl}
+          </a>
+        </div>
+        <div>
+          <a href={urls.pdfUrl} target="_blank" rel="noopener noreferrer">
+            {urls.pdfUrl}
+          </a>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col w-1/2 p-4 h-full">
       {/* Left Column Title */}
@@ -80,7 +96,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
         </button>
         <button
           onClick={() => submitForm()}
-          // disabled={step !== experiences.length - 1}
+          disabled={step !== experiences.length - 1 || form.length !== 4}
           className={`px-4 py-2 rounded ${
             step !== experiences.length - 1
               ? "bg-gray-300 cursor-not-allowed"
