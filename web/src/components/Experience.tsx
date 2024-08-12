@@ -45,12 +45,12 @@ const Experience = ({
                 content: rankBulletsPrompt(bullets, job.description),
               },
             ],
-            model: "gpt-4o",
+            model: "gpt-3.5-turbo",
           });
 
           const responseText = chatCompletion?.choices[0]?.message.content;
 
-          console.log("OpenAI Response\n", responseText);
+          // console.log("OpenAI Response\n", responseText);
           if (!responseText) {
             throw new Error("general issue with cohere response");
           }
@@ -136,7 +136,6 @@ const Experience = ({
     });
 
     drag(drop(ref));
-
     return (
       <li
         ref={ref}

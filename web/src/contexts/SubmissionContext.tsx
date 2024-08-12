@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode, useState } from "react";
 import { Bullet } from "../utils/types";
-const VITE_SCRAPER_URL = import.meta.env.VITE_SCRAPER_URL as string;
+const VITE_SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL as string;
 
 type SubmissionContextType = {
   form: Bullet[][];
@@ -21,15 +21,23 @@ export function SubmissionContextProvider({
 }: SubmissionContextProviderProps) {
   const [form, setForm] = useState<Bullet[][]>([]);
 
+  const bulletContent = form.map((experience: Bullet[]) => {
+    return experience.map((bullet) => {
+      return bullet.content;
+    });
+  });
+
   const submitForm = async () => {
-    const options = {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(form),
-    };
-    const response = await fetch(VITE_SCRAPER_URL, options);
-    console.log(response);
-    const data = response.json();
+    const encodedExperienceInputs = encodeURIComponent(
+      JSON.stringify(bulletContent)
+    );
+    console.log("Submitting...", encodedExperienceInputs);
+
+    const res = await fetch(
+      VITE_SCRIPT_URL + "?experienceInputs=" + encodedExperienceInputs
+    );
+    const data = await res.json();
+    console.log(data);
   };
 
   const value = {

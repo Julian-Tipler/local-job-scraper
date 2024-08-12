@@ -3,6 +3,7 @@ import { supabase } from "./clients/supabase";
 import { Job } from "./components/Job";
 import { Job as JobType } from "./utils/types";
 import { ExperienceStepper } from "./components/ExperienceStepper";
+import { SubmissionContextProvider } from "./contexts/SubmissionContext";
 
 function App() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -29,12 +30,14 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen justify-center gap-12">
-      <ExperienceStepper job={job} />
-      <div className="w-1/2 flex flex-col p-4">
-        <Job job={job} />   
+    <SubmissionContextProvider>
+      <div className="flex h-screen justify-center gap-12">
+        <ExperienceStepper job={job} />
+        <div className="w-1/2 flex flex-col p-4">
+          <Job job={job} />
+        </div>
       </div>
-    </div>
+    </SubmissionContextProvider>
   );
 }
 export default App;
