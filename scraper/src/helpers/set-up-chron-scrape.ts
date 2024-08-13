@@ -9,22 +9,22 @@ dotenv.config();
 
 export const setUpChronScrape = async () => {
   // Schedule the BuiltIn scrape job to run every minute
-  cron.schedule("* * * * *", () => {
-    scrapeBuiltInData();
-  });
+  // cron.schedule("* * * * *", () => {
+  //   scrapeBuiltInData();
+  // });
 
   // Schedule the Dice scrape job to run every 10 minutes
-  // cron.schedule("*/10 * * * *", () => {
-  //   scrapeDiceData();
-  // });
+  cron.schedule("*/10 * * * *", () => {
+    scrapeDiceData();
+  });
 
   // cron.schedule("*/10 * * * *", () => {
   //   scrapeIndeedData();
   // });
 
   // Initial calls to the scrape functions
-  scrapeBuiltInData();
-  // scrapeDiceData();
+  // scrapeBuiltInData();
+  scrapeDiceData();
   // scrapeIndeedData();
 
   await supabase
@@ -36,7 +36,7 @@ export const setUpChronScrape = async () => {
 const scrapeBuiltInData = async () => {
   console.info("Starting BuiltIn Job 🚧");
   try {
-    const jobs = await scrapeBuiltIn();
+    await scrapeBuiltIn();
   } catch (error) {
     console.error("Error scraping BuiltIn: ", error);
   }
@@ -45,8 +45,7 @@ const scrapeBuiltInData = async () => {
 const scrapeDiceData = async () => {
   console.info("Starting Dice Job 🎲");
   try {
-    const jobs = await scrapeDice();
-    await handleData(jobs, "Dice");
+    await scrapeDice();
   } catch (error) {
     console.error("Error scraping Dice: ", error);
   }
