@@ -46,10 +46,10 @@ export const scrapeBuiltIn = async () => {
           await page.goto(job.url, { waitUntil: "domcontentloaded" });
           const number = Math.floor(Math.random() * 1000) + 1;
           await new Promise((resolve) => setTimeout(resolve, 1000 + number));
-          await page.screenshot({
-            path: `${new Date()}.png`,
-            fullPage: true,
-          });
+          // await page.screenshot({
+          //   path: `${new Date()}.png`,
+          //   fullPage: true,
+          // });
           await page.waitForSelector(".job-description", { timeout: 5000 });
           const jobDescriptionHtml = await page.evaluate(() => {
             const jobDescElement = document.querySelector(".job-description");

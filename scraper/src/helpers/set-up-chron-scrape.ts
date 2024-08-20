@@ -18,14 +18,14 @@ export const setUpChronScrape = async () => {
     scrapeDiceData();
   });
 
-  // cron.schedule("*/10 * * * *", () => {
-  //   scrapeIndeedData();
-  // });
+  cron.schedule("*/10 * * * *", () => {
+    // scrapeIndeedData();
+  });
 
   // Initial calls to the scrape functions
-  scrapeBuiltInData();
-  scrapeDiceData();
-  // scrapeIndeedData();
+  // scrapeBuiltInData();
+  // scrapeDiceData();
+  scrapeIndeedData();
 
   await supabase
     .from("jobs")

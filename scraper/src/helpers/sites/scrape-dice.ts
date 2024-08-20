@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer-extra";
 import { filterExistingJobs } from "../filterExistingJobs";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { handleNewJobs } from "./handle-new-jobs";
 import { Browser } from "puppeteer";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 const WEBSITE = "Dice";
 const URL =
@@ -71,7 +71,7 @@ export const scrapeDice = async () => {
         );
       }
     }
-    console.log("New Jobs:", newJobs);
+
     handleNewJobs(newJobs, WEBSITE);
     return newJobs;
   } catch (error) {
