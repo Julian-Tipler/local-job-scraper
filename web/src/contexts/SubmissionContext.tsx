@@ -3,8 +3,8 @@ import { Bullet } from "../utils/types";
 const VITE_SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL as string;
 
 type SubmissionContextType = {
-  form: Bullet[][];
-  setForm: React.Dispatch<React.SetStateAction<Bullet[][]>>;
+  bullets: Bullet[][];
+  setBullets: React.Dispatch<React.SetStateAction<Bullet[][]>>;
   submitForm: () => Promise<void>;
   submitted: boolean;
   urls: {
@@ -30,7 +30,7 @@ interface SubmissionContextProviderProps {
 export function SubmissionContextProvider({
   children,
 }: SubmissionContextProviderProps) {
-  const [form, setForm] = useState<Bullet[][]>([]);
+  const [bullets, setBullets] = useState<Bullet[][]>([]);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [urls, setUrls] = useState<{
     pdfUrl: string;
@@ -38,12 +38,11 @@ export function SubmissionContextProvider({
   }>({ pdfUrl: "", docUrl: "" });
 
   const submitForm = async () => {
-    const bulletContent = form.map((experience: Bullet[]) => {
+    const bulletContent = bullets.map((experience: Bullet[]) => {
       return experience.map((bullet) => {
         return bullet.content;
       });
     });
-    console.log(bulletContent);
     const sanitizedData = bulletContent.map((bullet) =>
       bullet.map((text) => text.replace(/%/g, "__PERCENT__"))
     );
@@ -62,8 +61,8 @@ export function SubmissionContextProvider({
   };
 
   const value = {
-    form,
-    setForm,
+    bullets,
+    setBullets,
     submitForm,
     submitted,
     urls,

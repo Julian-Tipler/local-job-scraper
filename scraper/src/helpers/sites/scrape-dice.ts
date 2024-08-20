@@ -1,22 +1,24 @@
 import puppeteer from "puppeteer-extra";
 import { filterExistingJobs } from "../filterExistingJobs";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { handleNewJobs } from "./handle-new-jobs";
+import { Browser } from "puppeteer";
 
 const WEBSITE = "Dice";
 const URL =
   "https://www.dice.com/jobs?q=software%20engineering&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=20&filters.postedDate=ONE&filters.workplaceTypes=Remote&filters.employmentType=FULLTIME&language=en";
 
 export const scrapeDice = async () => {
-  let browser;
+  let browser: Browser | null = null;
   try {
-    const browser = await puppeteer.use(StealthPlugin()).launch({
+    browser = await puppeteer.use(StealthPlugin()).launch({
       headless: true,
     });
 
     const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector("a.card-title-link", { timeout: 60000 });
-    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+    // page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
 
     const jobs: { title: string; url: string; description: string }[] =
       await page.evaluate(() => {
@@ -35,7 +37,6 @@ export const scrapeDice = async () => {
       });
 
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
-
     for (const job of newJobs) {
       console.info(`Fetching job description for ${job.title}`);
       try {
@@ -49,7 +50,6 @@ export const scrapeDice = async () => {
         // });
 
         const jobDescriptionHtml: any = await page.evaluate(() => {
-
           const jobDescElement = document.querySelector(
             "#jobDescription",
           );
@@ -71,7 +71,8 @@ export const scrapeDice = async () => {
         );
       }
     }
-    console.log(newJobs);
+    console.log("New Jobs:", newJobs);
+    handleNewJobs(newJobs, WEBSITE);
     return newJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);

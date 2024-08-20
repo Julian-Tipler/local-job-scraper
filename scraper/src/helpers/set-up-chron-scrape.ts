@@ -9,9 +9,9 @@ dotenv.config();
 
 export const setUpChronScrape = async () => {
   // Schedule the BuiltIn scrape job to run every minute
-  // cron.schedule("* * * * *", () => {
-  //   scrapeBuiltInData();
-  // });
+  cron.schedule("* * * * *", () => {
+    scrapeBuiltInData();
+  });
 
   // Schedule the Dice scrape job to run every 10 minutes
   cron.schedule("*/10 * * * *", () => {
@@ -23,7 +23,7 @@ export const setUpChronScrape = async () => {
   // });
 
   // Initial calls to the scrape functions
-  // scrapeBuiltInData();
+  scrapeBuiltInData();
   scrapeDiceData();
   // scrapeIndeedData();
 

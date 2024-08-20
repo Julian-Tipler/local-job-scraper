@@ -8,7 +8,7 @@ import { useSubmissionContext } from "../contexts/SubmissionContext";
 export const ExperienceStepper = ({ job }: { job: Job }) => {
   const [step, setStep] = useState(0);
   const [experiences, setExperiences] = useState<ExperienceType[]>([]);
-  const { submitForm, form, submitted, urls } = useSubmissionContext();
+  const { submitForm, bullets, submitted, urls } = useSubmissionContext();
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
@@ -96,7 +96,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
         </button>
         <button
           onClick={() => submitForm()}
-          disabled={step !== experiences.length - 1 || form.length !== 4}
+          disabled={step !== experiences.length - 1 || bullets.length !== 4}
           className={`px-4 py-2 rounded ${
             step !== experiences.length - 1
               ? "bg-gray-300 cursor-not-allowed"

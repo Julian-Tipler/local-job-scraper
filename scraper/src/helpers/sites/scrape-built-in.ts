@@ -3,12 +3,14 @@ import { filterExistingJobs } from "../filterExistingJobs";
 import { handleNewJobs } from "./handle-new-jobs";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { Browser } from "puppeteer";
 
 const WEBSITE = "BuiltIn";
 const URL =
   "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
 
 export const scrapeBuiltIn = async () => {
+  let browser: Browser | null = null;
   try {
     const response = await fetch(URL);
     const text = await response.text();
@@ -31,7 +33,7 @@ export const scrapeBuiltIn = async () => {
 
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
 
-    const browser = await puppeteer.use(StealthPlugin()).launch({
+    browser = await puppeteer.use(StealthPlugin()).launch({
       headless: true,
     });
 
@@ -44,11 +46,11 @@ export const scrapeBuiltIn = async () => {
           await page.goto(job.url, { waitUntil: "domcontentloaded" });
           const number = Math.floor(Math.random() * 1000) + 1;
           await new Promise((resolve) => setTimeout(resolve, 1000 + number));
-          // await page.screenshot({
-          //   path: `${new Date()}.png`,
-          //   fullPage: true,
-          // });
-
+          await page.screenshot({
+            path: `${new Date()}.png`,
+            fullPage: true,
+          });
+          await page.waitForSelector(".job-description", { timeout: 5000 });
           const jobDescriptionHtml = await page.evaluate(() => {
             const jobDescElement = document.querySelector(".job-description");
             return jobDescElement ? jobDescElement.innerHTML : "";
@@ -74,5 +76,9 @@ export const scrapeBuiltIn = async () => {
     handleNewJobs(newJobs, WEBSITE);
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 };

@@ -54,9 +54,6 @@ Your task is to rank these bullets in order of their relevance to the provided j
 
 ${returnInstructions}
 
-Job Description:
-${jobDescription}
-
 bullets:
 ${
     bullets.map((bullet, i) => {
@@ -64,7 +61,9 @@ ${
     }).join("\n")
   }
 
-Ranking of Relevance (from most relevant to least relevant):
+Job Description:
+${jobDescription}
+
 `;
 };
 

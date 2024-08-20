@@ -20,9 +20,9 @@ const Experience = ({
   selected: boolean;
   job: Job;
 }) => {
-  const { form, setForm } = useSubmissionContext();
-
-  const entry = form[parseInt(experience.id) - 1];
+  const { bullets, setBullets } = useSubmissionContext();
+  console.log(bullets);
+  const entry = bullets[parseInt(experience.id) - 1];
 
   useEffect(() => {
     const fetchBullets = async () => {
@@ -33,46 +33,44 @@ const Experience = ({
           .order("id", { ascending: true })
           .eq("experienceId", experience.id);
 
-        if (error) {
+        if (error || !bullets) {
           throw new Error(error.message);
         }
 
-        if (bullets) {
-          const chatCompletion = await openai.chat.completions.create({
-            messages: [
-              {
-                role: "system",
-                content: rankBulletsPrompt(bullets, job.description),
-              },
-            ],
-            model: "gpt-3.5-turbo",
-          });
+        const chatCompletion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: rankBulletsPrompt(bullets, job.description),
+            },
+          ],
+          model: "gpt-3.5-turbo",
+        });
 
-          const responseText = chatCompletion?.choices[0]?.message.content;
+        const responseText = chatCompletion?.choices[0]?.message.content;
 
-          // console.log("OpenAI Response\n", responseText);
-          if (!responseText) {
-            throw new Error("general issue with cohere response");
-          }
-
-          const split = responseText.split("---");
-          if (!(split.length === 2)) {
-            throw new Error("Issue with cohere response text");
-          }
-
-          // console.log("cohere ranking", split[1]);
-          const ranking: Bullet[] = split[1]
-            .trim()
-            .split(",")
-            .map((rank: string) => {
-              return bullets[parseInt(rank) - 1];
-            });
-          setForm((prev: Bullet[][]) => {
-            const dupeNewForm = [...prev];
-            dupeNewForm[parseInt(experience.id) - 1] = ranking;
-            return dupeNewForm;
-          });
+        // console.log("OpenAI Response\n", responseText);
+        if (!responseText) {
+          throw new Error("general issue with cohere response");
         }
+
+        const split = responseText.split("---");
+        if (!(split.length === 2)) {
+          throw new Error("Issue with cohere response text");
+        }
+
+        // console.log("cohere ranking", split[1]);
+        const ranking: Bullet[] = split[1]
+          .trim()
+          .split(",")
+          .map((rank: string) => {
+            return bullets[parseInt(rank) - 1];
+          });
+        setBullets((prev: Bullet[][]) => {
+          const dupeNewForm = [...prev];
+          dupeNewForm[parseInt(experience.id) - 1] = ranking;
+          return dupeNewForm;
+        });
       } catch (error) {
         console.error("Error fetching bullets:", error);
       }
@@ -85,7 +83,7 @@ const Experience = ({
     const newBullets = [...entry];
     newBullets.splice(dragIndex, 1);
     newBullets.splice(hoverIndex, 0, dragBullet);
-    setForm((prev: Bullet[][]) => {
+    setBullets((prev: Bullet[][]) => {
       const dupeNewForm = [...prev];
       dupeNewForm[parseInt(experience.id) - 1] = newBullets;
       return dupeNewForm;
@@ -159,7 +157,7 @@ const Experience = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <main className="flex flex-col flex-1 p-4 border overflow-hidden">
-        <h2>Experience Title</h2>
+        <h2>{experience.title}</h2>
         <ul className="flex-1 overflow-y-auto flex flex-col gap-1">
           {entry.map((bullet, index) => (
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
