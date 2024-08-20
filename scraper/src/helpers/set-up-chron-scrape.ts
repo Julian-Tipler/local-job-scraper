@@ -18,14 +18,15 @@ export const setUpChronScrape = async () => {
     scrapeDiceData();
   });
 
+  //Blocked by cloudflare atm
   cron.schedule("*/10 * * * *", () => {
     // scrapeIndeedData();
   });
 
   // Initial calls to the scrape functions
-  // scrapeBuiltInData();
-  // scrapeDiceData();
-  scrapeIndeedData();
+  scrapeBuiltInData();
+  scrapeDiceData();
+  // scrapeIndeedData();
 
   await supabase
     .from("jobs")
