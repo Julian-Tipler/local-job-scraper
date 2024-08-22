@@ -24,8 +24,8 @@ export const setUpChronScrape = async () => {
   });
 
   // Initial calls to the scrape functions
-  scrapeBuiltInData();
-  scrapeDiceData();
+  await scrapeBuiltInData();
+  await scrapeDiceData();
   // scrapeIndeedData();
 
   await supabase
@@ -52,16 +52,16 @@ const scrapeDiceData = async () => {
   }
 };
 
-const scrapeIndeedData = async () => {
-  console.info("Starting Indeed Job 🎩");
-  try {
-    const jobs = await scrapeIndeed();
-    if (!jobs) {
-      console.error("No jobs found from Indeed");
-      return;
-    }
-    await handleData(jobs, "Indeed");
-  } catch (error) {
-    console.error("Error scraping Indeed: ", error);
-  }
-};
+// const scrapeIndeedData = async () => {
+//   console.info("Starting Indeed Job 🎩");
+//   try {
+//     const jobs = await scrapeIndeed();
+//     if (!jobs) {
+//       console.error("No jobs found from Indeed");
+//       return;
+//     }
+//     await handleData(jobs, "Indeed");
+//   } catch (error) {
+//     console.error("Error scraping Indeed: ", error);
+//   }
+// };
