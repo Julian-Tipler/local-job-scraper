@@ -7,6 +7,8 @@ import { rankBulletsPrompt } from "../utils/rank-bullets-prompt";
 import { openai } from "../utils/clients/openai";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
 
+// Ideally the order of the experiences would be constant and saved in the db
+
 const ItemTypes = {
   BULLET: "bullet",
 };
