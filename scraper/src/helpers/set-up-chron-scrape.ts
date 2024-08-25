@@ -3,8 +3,7 @@ import { supabase } from "../clients/supabase";
 import dotenv from "dotenv";
 import { scrapeBuiltIn } from "./sites/scrape-built-in";
 import { scrapeDice } from "./sites/scrape-dice";
-import { handleData } from "./handle-data";
-import { scrapeIndeed } from "./sites/scrape-indeed";
+import { scrapeCareerBuilder } from "./sites/scrape-career-builder";
 dotenv.config();
 
 export const setUpChronScrape = async () => {
@@ -14,19 +13,20 @@ export const setUpChronScrape = async () => {
   });
 
   // Schedule the Dice scrape job to run every 10 minutes
-  cron.schedule("*/10 * * * *", () => {
+  cron.schedule("*/5 * * * *", () => {
     scrapeDiceData();
-  });
 
-  //Blocked by cloudflare atm
-  cron.schedule("*/10 * * * *", () => {
+    // Blocked by Cloudflare atm
     // scrapeIndeedData();
+  });
+  cron.schedule("*/10 * * * *", () => {
+    // scrapeCareerBuilderData();
   });
 
   // Initial calls to the scrape functions
   await scrapeBuiltInData();
   await scrapeDiceData();
-  // scrapeIndeedData();
+  // await scrapeCareerBuilderData();
 
   await supabase
     .from("jobs")
@@ -39,7 +39,7 @@ const scrapeBuiltInData = async () => {
   try {
     await scrapeBuiltIn();
   } catch (error) {
-    console.error("Error scraping BuiltIn: ", error);
+    console.error("Caught error scraping BuiltIn: ", error);
   }
 };
 
@@ -48,7 +48,16 @@ const scrapeDiceData = async () => {
   try {
     await scrapeDice();
   } catch (error) {
-    console.error("Error scraping Dice: ", error);
+    console.error("Caught error scraping Dice: ", error);
+  }
+};
+
+const scrapeCareerBuilderData = async () => {
+  console.info("Starting Career Builder Job 🏗");
+  try {
+    await scrapeCareerBuilder();
+  } catch (error) {
+    console.error("Caught error scraping Career Builder: ", error);
   }
 };
 

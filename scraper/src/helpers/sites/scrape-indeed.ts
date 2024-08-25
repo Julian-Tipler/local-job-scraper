@@ -16,10 +16,10 @@ export const scrapeIndeed = async () => {
     const page = await browser.newPage();
     await page.goto(URL, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector("body", { timeout: 60000 });
-    await page.screenshot({
-      path: `${new Date()}.png`,
-      fullPage: true,
-    });
+    // await page.screenshot({
+    //   path: `${new Date()}.png`,
+    //   fullPage: true,
+    // });
 
     page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
     const jobs: { title: string; url: string; description: string }[] =

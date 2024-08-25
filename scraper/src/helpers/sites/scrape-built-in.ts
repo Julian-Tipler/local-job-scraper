@@ -8,6 +8,7 @@ import { Browser } from "puppeteer";
 const WEBSITE = "BuiltIn";
 const URL =
   "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
+const NUM_JOBS = 8;
 
 export const scrapeBuiltIn = async () => {
   let browser: Browser | null = null;
@@ -21,7 +22,7 @@ export const scrapeBuiltIn = async () => {
     // Iterate over each job card and extract the text from the <a> tag inside the <h2> tag
     const jobs: { title: string; url: string; description: string }[] = [];
     jobCards.each((index, element) => {
-      if (index >= 6) return false;
+      if (index >= NUM_JOBS) return false;
       const job = $(element).find("h2 a");
       const jobTitle = job.text().trim();
       jobs.push({
@@ -30,6 +31,11 @@ export const scrapeBuiltIn = async () => {
         description: "",
       });
     });
+    if (jobs.length === NUM_JOBS) {
+      console.info(`Fetched ${WEBSITE} jobs index successfully`);
+    } else {
+      console.info(`No jobs found on ${WEBSITE}`);
+    }
 
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
 
@@ -46,24 +52,36 @@ export const scrapeBuiltIn = async () => {
           await page.goto(job.url, { waitUntil: "domcontentloaded" });
           const number = Math.floor(Math.random() * 1000) + 1;
           await new Promise((resolve) => setTimeout(resolve, 1000 + number));
-          // await page.screenshot({
-          //   path: `${new Date()}.png`,
-          //   fullPage: true,
-          // });
-          await page.waitForSelector(".job-description", { timeout: 5000 });
+
+          await page.waitForSelector(".job-post-item", { timeout: 5000 });
           const jobDescriptionHtml = await page.evaluate(() => {
-            const jobDescElement = document.querySelector(".job-description");
-            return jobDescElement ? jobDescElement.innerHTML : "";
+            const jobPostItem = document.querySelector(".job-post-item");
+            if (jobPostItem) {
+              const roleElement = Array.from(jobPostItem.querySelectorAll("*"))
+                .find((el) => el.textContent?.trim() === "The Role");
+              if (roleElement) {
+                const nextSiblingDiv = roleElement.nextElementSibling;
+                if (
+                  nextSiblingDiv &&
+                  nextSiblingDiv.tagName.toLowerCase() === "div"
+                ) {
+                  return nextSiblingDiv.innerHTML;
+                }
+              }
+            }
+            return "";
           });
-          if (jobDescriptionHtml) {
-            // Replace certain HTML tags with line breaks
-            const jobDescription = jobDescriptionHtml
-              .replace(/<br\s*\/?>/gi, "\n")
-              .replace(/<\/p>/gi, "\n\n")
-              .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
-              .trim();
-            job.description = jobDescription;
+          if (!jobDescriptionHtml) {
+            throw new Error("Job description not found");
           }
+          // Replace certain HTML tags with line breaks
+          const jobDescription = jobDescriptionHtml
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p>/gi, "\n\n")
+            .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
+            .trim();
+          job.description = jobDescription;
+
           // Add job description to the job object
         } catch (jobError) {
           console.error(
