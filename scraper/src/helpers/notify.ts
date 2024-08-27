@@ -19,10 +19,11 @@ export const notify = async (
     `\n\n
     ${
       sortedJobTItles.map((job) =>
-        `${job.title}:\nhttp://localhost:5173/?job=${job.id}\n`
+        `${job.title}:\nhttp://localhost:5173/job/${job.id}\n`
       ).join("\n")
     }`,
   );
+  console.log(`Notification sent for website ${website}`);
 };
 
 const sortJobs = async (

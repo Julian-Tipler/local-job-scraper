@@ -3,9 +3,10 @@ import { filterExistingJobs } from "../filterExistingJobs";
 import { handleNewJobs } from "./handle-new-jobs";
 import { Browser } from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { Job } from "../../util/types";
 
 const WEBSITE = "Dice";
-const URL =
+const SITE_URL =
   "https://www.dice.com/jobs?q=software%20engineering&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=20&filters.postedDate=ONE&filters.workplaceTypes=Remote&filters.employmentType=FULLTIME&language=en";
 
 export const scrapeDice = async () => {
@@ -16,31 +17,35 @@ export const scrapeDice = async () => {
     });
 
     const page = await browser.newPage();
-    await page.goto(URL, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(SITE_URL, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector("a.card-title-link", { timeout: 60000 });
     // page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
 
-    const jobs: { title: string; url: string; description: string }[] =
-      await page.evaluate(() => {
-        const jobElements = Array.from(
-          document.querySelectorAll("a.card-title-link"),
-        );
+    const jobs: Job[] = await page.evaluate(() => {
+      const jobElements = Array.from(
+        document.querySelectorAll("a.card-title-link"),
+      );
 
-        return jobElements.map((element) => {
-          const anchor = element as HTMLAnchorElement;
-          return {
-            title: element.textContent ? element.textContent.trim() : "",
-            url: "https://www.dice.com/job-detail/" + anchor.id,
-            description: "",
-          };
-        });
+      return jobElements.map((element) => {
+        const anchor = element as HTMLAnchorElement;
+        return {
+          title: element.textContent ? element.textContent.trim() : "",
+          url: "https://www.dice.com/job-detail/" + anchor.id,
+          description: "",
+        };
       });
+    });
+    if (jobs.length > 0) {
+      console.info(`Fetched ${WEBSITE} jobs index successfully`);
+    } else {
+      console.info(`No jobs found on ${WEBSITE}`);
+    }
 
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
-    for (const job of newJobs) {
-      console.info(`Fetching job description for ${job.title}`);
+    for (const newJob of newJobs) {
+      console.info(`Fetching job description for ${newJob.title}`);
       try {
-        await page.goto(job.url, { waitUntil: "domcontentloaded" });
+        await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
 
         const number = Math.floor(Math.random() * 1000) + 1;
         await new Promise((resolve) => setTimeout(resolve, 1000 + number));
@@ -62,12 +67,12 @@ export const scrapeDice = async () => {
             .replace(/<\/p>/gi, "\n\n")
             .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
             .trim();
-          job.description = jobDescription;
+          newJob.description = jobDescription;
         }
         // Add job description to the job object
       } catch (jobError) {
         console.error(
-          `Error fetching job description for ${job.title}: ${jobError.message}`,
+          `Error fetching job description for ${newJob.title}: ${jobError.message}`,
         );
       }
     }

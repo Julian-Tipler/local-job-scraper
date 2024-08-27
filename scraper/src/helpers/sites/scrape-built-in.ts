@@ -6,14 +6,14 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 
 const WEBSITE = "BuiltIn";
-const URL =
+const SITE_URL =
   "https://www.builtinaustin.com/jobs/remote/dev-engineering?city=Austin&state=Texas&country=USA";
 const NUM_JOBS = 8;
 
 export const scrapeBuiltIn = async () => {
   let browser: Browser | null = null;
   try {
-    const response = await fetch(URL);
+    const response = await fetch(SITE_URL);
     const text = await response.text();
 
     const $ = cheerio.load(text);
