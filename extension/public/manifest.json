@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "local job scraper",
-  "description": "This extension scrapes job postings from various websites and links to the original posting.",
+  "description": "Provides a button to load a job description into the system",
   "version": "1.0",
   "key": "lhpifmnfegimpmfnkmgnkahhfpkaakpj",
   "permissions": ["webRequest", "storage"],
