@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
@@ -17,11 +19,7 @@ export const scrapeMicrosoft = async () => {
 
     const page = await browser.newPage();
     await page.goto(SITE_URL, { waitUntil: "networkidle2", timeout: 20000 });
-    await page.waitForSelector('[aria-label="job list"]', { timeout: 20000 });
-    await page.screenshot({
-      path: `${new Date()}.png`,
-      fullPage: true,
-    });
+    await page.waitForSelector('[aria-label*="Job item"]', { timeout: 20000 });
 
     const jobs: Job[] = await page.evaluate(() => {
       const jobCards = Array.from(
@@ -33,23 +31,18 @@ export const scrapeMicrosoft = async () => {
         if (!ariaLabel) throw new Error("No aria-label found");
         const jobIdMatch = ariaLabel.match(/Job item (\d+)/);
         if (!jobIdMatch) throw new Error("No aria-label found");
-
         const childDiv = jobCard.querySelector("div"); // Select the first child div
-        if (childDiv) {
-          const secondChildDiv = childDiv.children[1]; // Select the second child div
-          if (secondChildDiv) {
-            return {
-              title: secondChildDiv.textContent
-                ? secondChildDiv.textContent.trim()
-                : "",
-              url: "https://jobs.careers.microsoft.com/global/en/job/" +
-                jobIdMatch[1],
-              description: "",
-            };
-          }
-        } else {
-          throw new Error("Issue scraping microsoft");
-        }
+        if (!childDiv) throw new Error("No child div found");
+        const secondChildDiv = childDiv.children[1]; // Select the second child div
+        if (!secondChildDiv) throw new Error("No second child div found");
+        return {
+          title: secondChildDiv.textContent
+            ? secondChildDiv.textContent.trim()
+            : "",
+          url: "https://jobs.careers.microsoft.com/global/en/job/" +
+            jobIdMatch[1],
+          description: "",
+        };
       });
     });
     if (jobs.length > 0) {
@@ -57,34 +50,47 @@ export const scrapeMicrosoft = async () => {
     } else {
       console.info(`No jobs found on ${WEBSITE}`);
     }
-
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
+
+    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
 
     for (const newJob of newJobs) {
       console.info(`Fetching job description for ${newJob.title}`);
       try {
         await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
+        console.log("--- NEW JOB URL", newJob.url);
+        await page.waitForSelector(".SearchJobDetailsCard", { timeout: 20000 });
 
         const number = Math.floor(Math.random() * 1000) + 1;
-        await new Promise((resolve) => setTimeout(resolve, 1000 + number));
-
-        const overviewHeader = Array.from(document.querySelectorAll("h3")).find(
-          (header) => header?.textContent?.trim() === "Overview",
-        );
-
-        if (overviewHeader) {
-          const nextSibling = overviewHeader.nextElementSibling;
-          if (nextSibling) {
-            const jobDescription = nextSibling.textContent
-              ? nextSibling.textContent.trim()
-              : "";
-            newJob.description = jobDescription;
-            return;
+        await page.screenshot({
+          path: `${new Date()}.png`,
+          fullPage: true,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 3000 + number));
+        const jobDescriptionHtml: any = await page.evaluate(() => {
+          const overviewHeader = Array.from(document.querySelectorAll("h3"))
+            .find(
+              (header) => header?.textContent?.trim() === "Overview",
+            );
+          console.log("overviewHeader", overviewHeader);
+          if (overviewHeader) {
+            const nextSibling = overviewHeader.nextElementSibling;
+            return nextSibling ? nextSibling.innerHTML : "";
           }
+        });
+        if (jobDescriptionHtml) {
+          // Replace certain HTML tags with line breaks
+          const jobDescription = jobDescriptionHtml
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p>/gi, "\n\n")
+            .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
+            .trim();
+          newJob.description = jobDescription;
+        } else {
+          throw new Error("No job description found");
         }
-        throw new Error();
-      } catch {
-        throw new Error("issue fetching job description");
+      } catch (error) {
+        throw new Error(`issue fetching job description: ${error}`);
       }
     }
   } catch (error) {
