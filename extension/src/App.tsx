@@ -2,10 +2,10 @@ import {
   RouterProvider,
   createHashRouter,
   Outlet,
-  redirect,
+  // redirect,
 } from "react-router-dom";
 import { Login } from "./views/Login";
-import { supabase } from "./clients/supabase-client";
+// import { supabase } from "./clients/supabase-client";
 import { Splash } from "./views/Splash";
 
 const App = () => {
@@ -22,7 +22,7 @@ const App = () => {
         {
           path: "/",
           element: <Splash />,
-          loader: protectedLoader,
+          // loader: protectedLoader,
         },
         {
           path: "/login",
@@ -41,28 +41,28 @@ const App = () => {
 
 export default App;
 
-async function protectedLoader() {
-  const sessionToken = await isAuthenticated();
-  console.log(sessionToken);
-  if (!sessionToken) {
-    return redirect("/login");
-  }
+// async function protectedLoader() {
+//   const sessionToken = await isAuthenticated();
+//   console.log(sessionToken);
+//   if (!sessionToken) {
+//     return redirect("/login");
+//   }
 
-  const auth = await supabase.auth.getUser(sessionToken);
-  if (!auth.data?.user) {
-    return redirect("/login");
-  }
-  return { sessionToken };
-}
+//   const auth = await supabase.auth.getUser(sessionToken);
+//   if (!auth.data?.user) {
+//     return redirect("/login");
+//   }
+//   return { sessionToken };
+// }
 
-const isAuthenticated = async (): Promise<string | false> => {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["wiseFlashcardsSessionToken"], function(result) {
-      if (result.wiseFlashcardsSessionToken) {
-        resolve(result.wiseFlashcardsSessionToken);
-      } else {
-        resolve(false);
-      }
-    });
-  });
-};
+// const isAuthenticated = async (): Promise<string | false> => {
+//   return new Promise((resolve) => {
+//     chrome.storage.local.get(["wiseFlashcardsSessionToken"], function(result) {
+//       if (result.wiseFlashcardsSessionToken) {
+//         resolve(result.wiseFlashcardsSessionToken);
+//       } else {
+//         resolve(false);
+//       }
+//     });
+//   });
+// };
