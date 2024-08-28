@@ -14,7 +14,7 @@ const main = () => {
   shadowRoot.appendChild(button);
   document.body.appendChild(shadowRoot);
 
-  button.addEventListener("click", handleScrapeAndRedirect());
+  button.addEventListener("click", handleScrapeAndRedirect(button));
 
   // display the "create resume" button
 
