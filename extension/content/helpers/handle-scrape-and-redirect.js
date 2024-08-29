@@ -1,20 +1,24 @@
+import { openai } from "../clients/openai";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
+
 export const handleScrapeAndRedirect = async (button) => {
   try {
-    const articleText = await extractJobParameters();
+    const { title, description } = await extractJobParameters();
+    const url = window.location.href;
 
     // later renditions should create the job event to bypass the create page
-
+    const webUrl =
+      `${import.meta.env.VITE_WEB_URL}/create?` +
+      `title=${encodeURIComponent(title)}&` +
+      `url=${encodeURIComponent(url)}&` +
+      `description=${encodeURIComponent(description)}`;
+    console.log(webUrl);
     button.innerHTML = "Flashcards Created!";
     button.style.backgroundColor = "green";
-    window.open(
-      `${import.meta.env.VITE_WEB_URL}/create?` +
-        `title=` +
-        `url=` +
-        `description=`,
-      "_blank"
-    );
+    window.open(webUrl, "_blank");
   } catch (error) {
-    console.error("Error creating flashcards");
+    console.error("Error extracting job parameters", error);
     button.innerHTML = "Error creating flashcards!";
     button.style.backgroundColor = "red";
   }
@@ -43,7 +47,8 @@ const extractJobParameters = async () => {
 
   // Here, you might want to filter or process the text to remove unwanted parts like ads, navigation elements, etc.
   const cleanedText = await cleanText(content.innerText);
-  const { title, url, description } = await openAIParseText(cleanedText);
+  const jobParams = await openAIParseText(cleanedText);
+  return jobParams;
 };
 
 const cleanText = (text) => {
@@ -54,7 +59,43 @@ const cleanText = (text) => {
 };
 
 const openAIParseText = async (text) => {
-    
+  const completion = await openai.beta.chat.completions.parse({
+    model: "gpt-4o-mini-2024-07-18",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an assistant that returns information in JSON format.",
+      },
+      {
+        role: "user",
+        content: jobParamsPrompt + text,
+      },
+    ],
+    response_format: zodResponseFormat(JobOutput, "job_output"),
+  });
+  const response = completion.choices[0].message;
+  console.log(response);
+  if (response.parsed) {
+    console.log(response.parsed);
+  } else if (response.refusal) {
+    // handle refusal
+    console.log(response.refusal);
+  }
+  return {
+    title: response.parsed.title,
+    description: response.parsed.description,
+  };
   // create a fetch request to openAI functions that specifies it must return title, url, descroption
-  // handle incorrect response
+  // handle incorrect response (if !title || !url || !description throw new Error())
 };
+
+const JobOutput = z.object({
+  title: z.string(),
+  description: z.string(),
+});
+
+const jobParamsPrompt = `You are a job description parser who extracts the title and description from a job page on a job website. 
+You will be given the text from a webpage and must return only the title and description. 
+Return the full description, which may be several paragraphs.
+Here is the text from the website: `;

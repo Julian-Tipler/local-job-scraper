@@ -13,6 +13,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.42.3",
     "@types/chrome": "^0.0.266",
+    "openai": "^4.56.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",

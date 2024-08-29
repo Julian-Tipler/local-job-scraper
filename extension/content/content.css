@@ -1,1 +1,132 @@
 /* content css goes here*/
+:host {
+  all: initial;
+}
+
+/*
+  CSS reset
+*/
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+#local-job-scraper-content-container *,
+#local-job-scraper-content-container *::before,
+#local-job-scraper-content-container *::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+#local-job-scraper-content-container * {
+  margin: 0;
+}
+/*
+  Typographic tweaks!
+  3. Add accessible line-height
+  4. Improve text rendering
+*/
+#local-job-scraper-content-container body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/*
+  5. Improve media defaults
+*/
+#local-job-scraper-content-container img,
+#local-job-scraper-content-container picture,
+#local-job-scraper-content-container video,
+#local-job-scraper-content-container canvas,
+#local-job-scraper-content-container svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+  6. Remove built-in form typography styles
+*/
+#local-job-scraper-content-container input,
+#local-job-scraper-content-container button,
+#local-job-scraper-content-container textarea,
+#local-job-scraper-content-container select {
+  font: inherit;
+}
+/*
+  7. Avoid text overflows
+*/
+#local-job-scraper-content-container p,
+#local-job-scraper-content-container h1,
+#local-job-scraper-content-container h2,
+#local-job-scraper-content-container h3,
+#local-job-scraper-content-container h4,
+#local-job-scraper-content-container h5,
+#local-job-scraper-content-container h6 {
+  overflow-wrap: break-word;
+}
+/*
+  8. Create a root stacking context
+*/
+#local-job-scraper-content-container #root,
+#__next {
+  isolation: isolate;
+}
+
+#local-job-scraper-content-container {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1rem;
+  margin: 0;
+}
+
+.wise-icon {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 9998;
+  background-color: rgb(13, 47, 70);
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 100%;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+  display: flex; /* Ensure flexbox layout */
+  align-items: center; /* Center items vertically */
+  justify-content: center;
+}
+
+.wise-icon:hover {
+  opacity: 1;
+}
+
+.wise-create-flashcards-button {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: rgb(13, 47, 70);
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.wise-button-hidden {
+  display: none;
+}

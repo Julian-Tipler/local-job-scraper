@@ -1,8 +1,8 @@
 export const renderShadow = async () => {
-  const sRoot = document.createElement("div");
-  sRoot.id = "wise-flashcards-content-container";
+  const sContainer = document.createElement("div");
+  sContainer.id = "local-job-scraper-content-container";
 
-  const shadowRoot = sRoot.attachShadow({ mode: "closed" });
+  const shadowRoot = sContainer.attachShadow({ mode: "closed" });
   // shadowRoot.innerHTML  = `<style>:host {all: initial;}</style>`;
 
   const cssFiles = await Promise.all([loadCss("content/content.css")]);
@@ -12,6 +12,7 @@ export const renderShadow = async () => {
     style.textContent = css;
     shadowRoot.appendChild(style);
   });
+  return { sContainer, shadowRoot };
 };
 
 async function loadCss(filePath) {

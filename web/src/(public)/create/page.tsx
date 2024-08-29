@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../clients/supabase";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export const CreatePage = () => {
+  const [searchParams] = useSearchParams();
+
+  const paramTitle = searchParams.get("title");
+  const paramUrl = searchParams.get("url");
+  const paramDescription = searchParams.get("description");
+  
+  console.log("params", paramTitle, paramUrl, paramDescription);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string[]>([]);
   const [success, setSuccess] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setTitle(paramTitle || "");
+    setUrl(paramUrl || "");
+    setDescription(paramDescription || "");
+  }, [paramTitle, paramUrl, paramDescription]);
 
   const handleSubmit = async (
     e:
