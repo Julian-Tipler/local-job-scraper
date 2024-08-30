@@ -102,6 +102,23 @@ const Experience = ({
     });
   };
 
+  const addBullet = (bulletContent: string) => {
+    const newBullets = [
+      ...entry,
+      {
+        content: bulletContent,
+        id: String(Math.random() * 1000),
+        experienceId: experience.id,
+        created_at: new Date().toISOString(),
+      },
+    ];
+    setBullets((prev: Bullet[][]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      return dupeNewForm;
+    });
+  };
+
   const BulletItem = ({ bullet, index }: { bullet: Bullet; index: number }) => {
     const ref = useRef<HTMLLIElement>(null);
 
@@ -181,6 +198,20 @@ const Experience = ({
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
           ))}
         </ul>
+        <form>
+          <input
+            type="text"
+            placeholder="Add bullet"
+            className="border-2 border-gray-400 p-2 rounded-md"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addBullet(e.currentTarget.value);
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+        </form>
       </main>
     </DndProvider>
   );
