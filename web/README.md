@@ -30,3 +30,8 @@ Could be an object where keys are experience ids and values are arrays of bullet
 ## Personal Use
 
 For now put a user id on experiences. at /job/:id
+
+
+## Future Features
+
+Resume (left column) should have vertically stacked rows

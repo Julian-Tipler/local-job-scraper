@@ -1,14 +1,39 @@
 import { useEffect, useState } from "react";
 import { Job as JobType } from "../utils/types";
 import { openai } from "../utils/clients/openai";
+import { supabase } from "../clients/supabase";
 
 export const Job = ({ job }: { job: JobType }) => {
   const [keyWords, setKeyWords] = useState<string[]>([]);
+  const [userBullets, setUserBullets] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const fetchUserBullets = async () => {
+      const { data, error } = await supabase
+        .from("bullets")
+        .select("*")
+        .in("experienceId", [3, 4]);
+
+      if (error || !data) {
+        console.error("Error fetching bullets:", error);
+        setError("Error fetching bullets");
+        return;
+      } else {
+        console.log("Fetched bullets:", data);
+      }
+      setUserBullets(data.map((bullet) => bullet.content));
+    };
+    fetchUserBullets();
+  }, []);
 
   useEffect(() => {
+    if (!userBullets.length) return;
     const fetchKeyWords = async () => {
       try {
-        const prompt = `Extract any programming languages or technologies mentioned in this job description. Only return the programming languages or technologies and no other words: "${job.description}"`;
+        const prompt = `Extract any programming languages, technologies, or other skills (such as CI/CD) mentioned in this job description. 
+        In addition to general programming languages and technologies, look for the following key words: ${userBullets.join(", ")} 
+        Only return the programming languages or technologies separated by a comma and space and no other words
+        Here is the job description: "${job.description}"`;
         const completion = await openai.chat.completions.create({
           model: "gpt-3.5-turbo-0125", // Use the appropriate GPT model
           messages: [
@@ -21,10 +46,11 @@ export const Job = ({ job }: { job: JobType }) => {
           console.error("No keywords extracted from OpenAI");
           return;
         }
+        console.log("Extracted keywords:", extractedKeyWords);
         const trimmedKeyWords = extractedKeyWords
-          .trim()
-          .split(",")
+          .split(", ")
           .map((word: string) => word.trim());
+        console.log("Trimmed keywords:", trimmedKeyWords);
 
         setKeyWords(trimmedKeyWords);
       } catch (error) {
@@ -33,17 +59,20 @@ export const Job = ({ job }: { job: JobType }) => {
     };
 
     fetchKeyWords();
-  }, [job.description]);
+  }, [job.description, userBullets]);
 
   const formattedDescription = job.description
     .split("\n")
     .map((line, index) => <p key={`paragraph-${index}`}>{line}</p>);
 
+  if (error) {
+    return <div>{error}</div>;
+  }
   return (
     <div className="flex flex-col h-full">
       <h1 className="px-4 ">{job.title}</h1>
       <h1>Key words:</h1>
-      <div>{keyWords}</div>
+      <div>{keyWords.join(", ")}</div>
       <a
         className={"text-blue-500"}
         href={job.url}

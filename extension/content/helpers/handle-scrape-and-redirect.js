@@ -13,7 +13,7 @@ export const handleScrapeAndRedirect = async (button) => {
       `title=${encodeURIComponent(title)}&` +
       `url=${encodeURIComponent(url)}&` +
       `description=${encodeURIComponent(description)}`;
-    console.log(webUrl);
+
     button.innerHTML = "Flashcards Created!";
     button.style.backgroundColor = "green";
     window.open(webUrl, "_blank");
@@ -25,11 +25,11 @@ export const handleScrapeAndRedirect = async (button) => {
 };
 
 const extractJobParameters = async () => {
+  console.log("Extracting job parameters...");
   // Common content selectors: These should be adjusted based on common patterns found in your target pages.
+
   const contentSelectors = [
     "job",
-    ".post-content",
-    ".article-content",
     ".post-body",
     ".entry-content",
     "main", // Some sites use main for their primary content
@@ -37,14 +37,13 @@ const extractJobParameters = async () => {
   ];
 
   // Find the first matching element for these selectors
-  const content = contentSelectors.reduce((found, selector) => {
+  let content = contentSelectors.reduce((found, selector) => {
     return found || document.querySelector(selector);
   }, null);
 
   if (!content) {
-    return document.body.innerText.trim();
+    content = document.body;
   }
-
   // Here, you might want to filter or process the text to remove unwanted parts like ads, navigation elements, etc.
   const cleanedText = await cleanText(content.innerText);
   const jobParams = await openAIParseText(cleanedText);
@@ -59,6 +58,7 @@ const cleanText = (text) => {
 };
 
 const openAIParseText = async (text) => {
+  console.log("openai parsing text");
   const completion = await openai.beta.chat.completions.parse({
     model: "gpt-4o-mini-2024-07-18",
     messages: [
