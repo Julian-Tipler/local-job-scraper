@@ -92,6 +92,16 @@ const Experience = ({
     });
   };
 
+  const deleteBullet = (index: number) => {
+    const newBullets = [...entry];
+    newBullets.splice(index, 1);
+    setBullets((prev: Bullet[][]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      return dupeNewForm;
+    });
+  };
+
   const BulletItem = ({ bullet, index }: { bullet: Bullet; index: number }) => {
     const ref = useRef<HTMLLIElement>(null);
 
@@ -139,10 +149,16 @@ const Experience = ({
     return (
       <li
         ref={ref}
-        className="border-2 border-dashed border-gray-400 p-4 rounded-md cursor-move"
+        className="relative border-2 border-dashed border-gray-400 p-4 rounded-md cursor-move"
         style={{ opacity: isDragging ? 0.5 : 1 }}
         key={bullet.id}
       >
+        <button
+          onClick={() => deleteBullet(index)}
+          className="absolute top-1 right-1 text-gray-500 hover:text-red-500 "
+        >
+          ✕
+        </button>
         {bullet.content}
       </li>
     );
