@@ -11,3 +11,8 @@
    b. Replace favicon.png in extension/public folder
 4. Take screenshots of the product (web or extension)
    a. Insert into chrome extension in devconsole.
+
+
+## Future Features
+
+Question highlighting that sends the question to a backend function that sends the question to openai + the users's skills/experiences

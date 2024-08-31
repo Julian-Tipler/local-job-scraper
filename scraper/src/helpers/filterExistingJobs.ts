@@ -17,7 +17,7 @@ export const filterExistingJobs = async (
   }
 
   const existingJobKeySet = new Set(
-    existingJobs.map((job) => `${job.title}-${new URL(job.url).origin}`),
+    existingJobs.map((job) => `${job.title}-${new URL(job.url)}`),
   );
 
   if (!jobs?.filter) {
@@ -26,12 +26,12 @@ export const filterExistingJobs = async (
 
   const uniqueFilteredSet = jobs.filter((job, index, self) =>
     // Doesn't exist in database
-    !existingJobKeySet.has(`${job.title}-${new URL(job.url).origin}`) &&
+    !existingJobKeySet.has(`${job.title}-${new URL(job.url)}`) &&
     // Doesn't exist in the current array
     index ===
       self.findIndex((t) =>
-        `${t.title}-${new URL(t.url).origin}` ===
-          `${job.title}-${new URL(job.url).origin}`
+        `${t.title}-${new URL(t.url)}` ===
+          `${job.title}-${new URL(job.url)}`
       )
   );
 
@@ -39,4 +39,3 @@ export const filterExistingJobs = async (
 
   return newJobs;
 };
-

@@ -32,14 +32,22 @@ function JobPage() {
 
   return (
     <SubmissionContextProvider>
-      <div className="flex h-screen justify-center gap-12">
-        {showExperience ? (
-          <ExperienceStepper job={job} />
-        ) : (
-          <button className="bg-slate-500 h-16 p-4" onClick={() => setShowExperience(true)}>
-            Show Experience
-          </button>
-        )}
+      <div
+        className="flex justify-center gap-12"
+        style={{ height: "calc(100vh - 42px)" }}
+      >
+        <div className="w-1/2 flex flex-col p-4">
+          {showExperience ? (
+            <ExperienceStepper job={job} />
+          ) : (
+            <button
+              className="bg-slate-500 p-4 "
+              onClick={() => setShowExperience(true)}
+            >
+              Show Experience
+            </button>
+          )}
+        </div>
         <div className="w-1/2 flex flex-col p-4">
           <Job job={job} />
         </div>

@@ -1,8 +1,9 @@
 import { supabase } from "../../clients/supabase";
+import { Job } from "../../util/types";
 import { notify } from "../notify";
 
 export const handleNewJobs = async (
-  newJobs: { title: string; url: string; description: string }[],
+  newJobs: Job[],
   website: string,
 ) => {
   if (newJobs.length) {

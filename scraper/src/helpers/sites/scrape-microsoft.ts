@@ -5,6 +5,7 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../../util/types";
 import { filterExistingJobs } from "../filterExistingJobs";
+import { handleNewJobs } from "./handle-new-jobs";
 
 const WEBSITE = "Microsoft";
 const SITE_URL =
@@ -31,14 +32,14 @@ export const scrapeMicrosoft = async () => {
         if (!ariaLabel) throw new Error("No aria-label found");
         const jobIdMatch = ariaLabel.match(/Job item (\d+)/);
         if (!jobIdMatch) throw new Error("No aria-label found");
-        const childDiv = jobCard.querySelector("div"); // Select the first child div
-        if (!childDiv) throw new Error("No child div found");
-        const secondChildDiv = childDiv.children[1]; // Select the second child div
-        if (!secondChildDiv) throw new Error("No second child div found");
+        const groupDiv = jobCard.querySelector("div"); // Select the first child div
+        if (!groupDiv) throw new Error("No child div found");
+        const topHalfCard = groupDiv.children[1]; // Select the second child div
+        if (!topHalfCard) throw new Error("No second child div found");
+        const title = topHalfCard.querySelector("h2");
+        if (!title) throw new Error("No title found");
         return {
-          title: secondChildDiv.textContent
-            ? secondChildDiv.textContent.trim()
-            : "",
+          title: title.textContent ? title.textContent.trim() : "",
           url: "https://jobs.careers.microsoft.com/global/en/job/" +
             jobIdMatch[1],
           description: "",
@@ -51,32 +52,21 @@ export const scrapeMicrosoft = async () => {
       console.info(`No jobs found on ${WEBSITE}`);
     }
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
-
-    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+    console.log("new jobs", newJobs);
 
     for (const newJob of newJobs) {
       console.info(`Fetching job description for ${newJob.title}`);
       try {
         await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
-        console.log("--- NEW JOB URL", newJob.url);
-        await page.waitForSelector(".SearchJobDetailsCard", { timeout: 20000 });
+        await page.waitForSelector(".fcUffXZZoGt8CJQd8GUl", { timeout: 20000 });
 
-        const number = Math.floor(Math.random() * 1000) + 1;
-        await page.screenshot({
-          path: `${new Date()}.png`,
-          fullPage: true,
-        });
-        await new Promise((resolve) => setTimeout(resolve, 3000 + number));
         const jobDescriptionHtml: any = await page.evaluate(() => {
-          const overviewHeader = Array.from(document.querySelectorAll("h3"))
-            .find(
-              (header) => header?.textContent?.trim() === "Overview",
-            );
-          console.log("overviewHeader", overviewHeader);
-          if (overviewHeader) {
-            const nextSibling = overviewHeader.nextElementSibling;
-            return nextSibling ? nextSibling.innerHTML : "";
-          }
+          const jobDescription = document.querySelector(
+            ".fcUffXZZoGt8CJQd8GUl",
+          );
+          console.log("overviewHeader", jobDescription);
+
+          return jobDescription ? jobDescription.innerHTML : "";
         });
         if (jobDescriptionHtml) {
           // Replace certain HTML tags with line breaks
@@ -93,6 +83,7 @@ export const scrapeMicrosoft = async () => {
         throw new Error(`issue fetching job description: ${error}`);
       }
     }
+    handleNewJobs(newJobs, WEBSITE);
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;

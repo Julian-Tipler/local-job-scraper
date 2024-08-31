@@ -35,3 +35,5 @@ For now put a user id on experiences. at /job/:id
 ## Future Features
 
 Resume (left column) should have vertically stacked rows
+Make bullets have types (career vs knowledge)
+Make knowledge bullets have aliases (ie HTML5 and HTML)
