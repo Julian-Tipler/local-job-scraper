@@ -3,6 +3,7 @@ import { ROUTES } from "./utils/routes.ts";
 import { PublicLayout } from "./(public)/layout";
 import { CreatePage } from "./(public)/create/page.tsx";
 import JobPage from "./(public)/job/page.tsx";
+import { GroupPage } from "./(public)/group/GroupPage.tsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,6 +27,13 @@ function App() {
               element: <JobPage />,
               handle: {
                 data: { title: ROUTES.job.title },
+              },
+            },
+            {
+              path: `${ROUTES.group.path}/:id`,
+              element: <GroupPage />,
+              handle: {
+                data: { title: ROUTES.group.title },
               },
             },
           ],

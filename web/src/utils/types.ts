@@ -19,3 +19,9 @@ export type Job = {
   description: string;
   created_at: string;
 };
+
+export type Group = {
+  id: string;
+  name: string;
+  created_at: string;
+};

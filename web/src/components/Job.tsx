@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Job as JobType } from "../utils/types";
 import { supabase } from "../clients/supabase";
 import { ALL_LANGUAGES_AND_TECHNOLOGIES } from "../utils/all-languages-and-technologies";
+import { GroupsDropDown } from "./GroupsDropDown";
 
 export const Job = ({ job }: { job: JobType }) => {
   const [keyWords, setKeyWords] = useState<{ word: string; bold: boolean }[]>(
@@ -60,7 +61,10 @@ export const Job = ({ job }: { job: JobType }) => {
   }
   return (
     <div className="flex flex-col h-full">
-      <h1 className="px-4 ">{job.title}</h1>
+      <div className="flex">
+        <h1 className="px-4 ">{job.title}</h1>
+        <GroupsDropDown jobId={job.id} />
+      </div>
       <h1>Key words:</h1>
       <div>
         {keyWords.map((keyWord, index) => (

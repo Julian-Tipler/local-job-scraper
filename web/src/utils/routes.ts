@@ -9,4 +9,9 @@ export const ROUTES = {
     path: "/job",
     title: "Login",
   },
+  group: {
+    name: "group",
+    path: "/group",
+    title: "Group",
+  },
 };
