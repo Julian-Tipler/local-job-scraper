@@ -4,6 +4,7 @@ import { Group, Job } from "../../utils/types";
 
 export const GroupPage = () => {
   const groupId = window.location.pathname.split("/")[2];
+  const baseUrl = window.location.origin;
 
   const [group, setGroup] = useState<(Group & { jobs: Job[] }) | null>(null);
   useEffect(() => {
@@ -49,7 +50,12 @@ export const GroupPage = () => {
       <ul>
         {group.jobs.map((job) => (
           <li key={job.id} className="flex gap-2">
-            <a href={job.url}>{job.title}</a>
+            <div className="flex gap-4">
+              <a className="text-blue-400" href={job.url}>
+                URL
+              </a>
+              <a href={`${baseUrl}/job/${job.id}`}>{job.title}</a>
+            </div>
             <button
               className={"text-red-700"}
               onClick={() => removeJob(group.id, job.id)}
