@@ -69,7 +69,7 @@ export const fetchJobDescriptions = async (
   const page = await browser.newPage();
   for (const newJob of newJobs) {
     try {
-      await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
+      await page.goto(newJob.url, { waitUntil: "networkidle2" });
       await page.waitForSelector("<selector here>", { timeout: 20000 });
 
       const jobDescriptionHtml: any = await page.evaluate(() => {

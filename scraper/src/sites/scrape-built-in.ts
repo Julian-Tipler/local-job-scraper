@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import { filterExistingJobs } from "../filterExistingJobs";
+import { filterExistingJobs } from "../helpers/filterExistingJobs";
 import { handleNewJobs } from "./handle-new-jobs";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
