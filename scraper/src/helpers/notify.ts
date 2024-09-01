@@ -1,16 +1,27 @@
 import { cosineSimilarity, generateEmbeddings } from "../clients/openai";
+import { supabase } from "../clients/supabase";
+import { Job } from "../util/types";
 
 const apiKey = process.env.PUSHBULLET_API_KEY;
 
 export const notify = async (
-  newJobTitles: { id: string; title: string; url: string }[],
+  newJobTitles: Job[],
   website: string,
 ) => {
   const { default: PushBullet } = await import("pushbullet");
 
   const sortedJobTItles = await sortJobs(newJobTitles);
-  console.log("newJobTitles", newJobTitles.map((job) => job.title));
-  console.log("sortedJobTItles", sortedJobTItles.map((job) => job.title));
+
+  const { data, error } = await supabase
+    .from("bullets")
+    .select("*")
+    .in("experienceId", [3, 4]);
+
+  if (error || !data) {
+    console.error("Error fetching bullets:", error);
+  }
+
+  const userBullets = data ? data.map((bullet) => bullet.content) : [];
 
   const pusher = new PushBullet(apiKey);
   pusher.note(
@@ -19,14 +30,17 @@ export const notify = async (
     `\n\n
     ${
       sortedJobTItles.map((job) =>
-        `${job.title}:\nhttp://localhost:5173/?job=${job.id}\n`
+        `${job.title}:\n Skills:${
+          userBullets.filter((bullet) => job.description.includes(bullet))
+        }\nhttp://localhost:5173/job/${job.id}\n`
       ).join("\n")
     }`,
   );
+  console.log(`Notification sent for website ${website}`);
 };
 
 const sortJobs = async (
-  jobTitles: { id: string; title: string; url: string }[],
+  jobTitles: Job[],
 ) => {
   const myExperienceEmbedding = await generateEmbeddings(MY_EXPERIENCE);
 

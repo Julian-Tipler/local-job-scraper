@@ -7,6 +7,8 @@ import { rankBulletsPrompt } from "../utils/rank-bullets-prompt";
 import { openai } from "../utils/clients/openai";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
 
+// Ideally the order of the experiences would be constant and saved in the db
+
 const ItemTypes = {
   BULLET: "bullet",
 };
@@ -90,6 +92,33 @@ const Experience = ({
     });
   };
 
+  const deleteBullet = (index: number) => {
+    const newBullets = [...entry];
+    newBullets.splice(index, 1);
+    setBullets((prev: Bullet[][]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      return dupeNewForm;
+    });
+  };
+
+  const addBullet = (bulletContent: string) => {
+    const newBullets = [
+      ...entry,
+      {
+        content: bulletContent,
+        id: String(Math.random() * 1000),
+        experienceId: experience.id,
+        created_at: new Date().toISOString(),
+      },
+    ];
+    setBullets((prev: Bullet[][]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      return dupeNewForm;
+    });
+  };
+
   const BulletItem = ({ bullet, index }: { bullet: Bullet; index: number }) => {
     const ref = useRef<HTMLLIElement>(null);
 
@@ -137,10 +166,16 @@ const Experience = ({
     return (
       <li
         ref={ref}
-        className="border-2 border-dashed border-gray-400 p-4 rounded-md cursor-move"
+        className="relative border-2 border-dashed border-gray-400 p-4 rounded-md cursor-move"
         style={{ opacity: isDragging ? 0.5 : 1 }}
         key={bullet.id}
       >
+        <button
+          onClick={() => deleteBullet(index)}
+          className="absolute top-1 right-1 text-gray-500 hover:text-red-500 "
+        >
+          ✕
+        </button>
         {bullet.content}
       </li>
     );
@@ -163,6 +198,20 @@ const Experience = ({
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
           ))}
         </ul>
+        <form>
+          <input
+            type="text"
+            placeholder="Add bullet"
+            className="border-2 border-gray-400 p-2 rounded-md"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addBullet(e.currentTarget.value);
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+        </form>
       </main>
     </DndProvider>
   );

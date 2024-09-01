@@ -1,50 +1,39 @@
-# React + TypeScript + Vite
+## MVP personal use
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Job page
 
-Currently, two official plugins are available:
+Job loads at /job/:id including title, description, and url
+If no job order, automatically activate "order with AI"
+If job order exists, experiences/bullets are displayed in that order
+Experiences are set in a fixed order (for now)
+Every bullet rearrange, it is preserved on the backend
+Once the "drag" is done, a call to the backend (update job) with the current structure.
+Submit is prevented until all the experiences have 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Data
 
-## Expanding the ESLint configuration
+users
+experiences
+bullets
+jobs
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+User has many experiences. Experience has many bullets.
+User has many jobs.
 
-- Configure the top-level `parserOptions` property like this:
+What to do with "order". Should be related to job at the very least.
+Perhaps order should be a separate entity. Alternatively, it could be stored on a job.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Stored on job:
+New field "order"
+Could be an object where keys are experience ids and values are arrays of bullet ids
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Personal Use
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+For now put a user id on experiences. at /job/:id
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+
+## Future Features
+
+Resume (left column) should have vertically stacked rows
+Make bullets have types (career vs knowledge)
+Make knowledge bullets have aliases (ie HTML5 and HTML)

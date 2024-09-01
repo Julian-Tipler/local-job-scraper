@@ -4,26 +4,29 @@ import dotenv from "dotenv";
 import { scrapeBuiltIn } from "./sites/scrape-built-in";
 import { scrapeDice } from "./sites/scrape-dice";
 import { scrapeCareerBuilder } from "./sites/scrape-career-builder";
+import { scrapeMicrosoft } from "./sites/scrape-microsoft";
 dotenv.config();
 
 export const setUpChronScrape = async () => {
   // Schedule the BuiltIn scrape job to run every minute
-  cron.schedule("* * * * *", () => {
-    scrapeBuiltInData();
+  cron.schedule("* * * * *", async () => {
+    await scrapeBuiltInData();
   });
 
   // Schedule the Dice scrape job to run every 10 minutes
-  cron.schedule("*/5 * * * *", () => {
-    scrapeDiceData();
+  cron.schedule("*/5 * * * *", async () => {
+    await scrapeDiceData();
 
     // Blocked by Cloudflare atm
     // scrapeIndeedData();
   });
-  cron.schedule("*/10 * * * *", () => {
+  cron.schedule("*/10 * * * *", async () => {
+    await scrapeMicrosoftData();
     // scrapeCareerBuilderData();
   });
 
   // Initial calls to the scrape functions
+  await scrapeMicrosoftData();
   await scrapeBuiltInData();
   await scrapeDiceData();
   // await scrapeCareerBuilderData();
@@ -47,6 +50,15 @@ const scrapeDiceData = async () => {
   console.info("Starting Dice Job 🎲");
   try {
     await scrapeDice();
+  } catch (error) {
+    console.error("Caught error scraping Dice: ", error);
+  }
+};
+
+const scrapeMicrosoftData = async () => {
+  console.info("Starting Microsoft Job 💾");
+  try {
+    await scrapeMicrosoft();
   } catch (error) {
     console.error("Caught error scraping Dice: ", error);
   }

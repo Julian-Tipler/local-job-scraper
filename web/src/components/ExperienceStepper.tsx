@@ -58,7 +58,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
   return (
     <div className="flex flex-col w-1/2 p-4 h-full">
       {/* Left Column Title */}
-      <h1 className="px-4 ">Left Column</h1>
+      <h1 className="px-4 ">Resume Creator</h1>
       {/* Middle Section */}
       {experiences.map((experience, i) => {
         return (
