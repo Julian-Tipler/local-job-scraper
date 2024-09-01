@@ -51,6 +51,7 @@ export const scrapeMicrosoft = async () => {
     } else {
       console.info(`No jobs found on ${WEBSITE}`);
     }
+
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
     console.log("new jobs", newJobs);
 
