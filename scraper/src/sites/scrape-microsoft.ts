@@ -3,8 +3,8 @@ dotenv.config();
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
-import { Job } from "../../util/types";
-import { filterExistingJobs } from "../filterExistingJobs";
+import { Job } from "../util/types";
+import { filterExistingJobs } from "../helpers/filterExistingJobs";
 import { handleNewJobs } from "./handle-new-jobs";
 
 const WEBSITE = "Microsoft";

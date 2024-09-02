@@ -12,17 +12,6 @@ export const notify = async (
 
   const sortedJobTItles = await sortJobs(newJobTitles);
 
-  const { data, error } = await supabase
-    .from("bullets")
-    .select("*")
-    .in("experienceId", [3, 4]);
-
-  if (error || !data) {
-    console.error("Error fetching bullets:", error);
-  }
-
-  const userBullets = data ? data.map((bullet) => bullet.content) : [];
-
   const pusher = new PushBullet(apiKey);
   pusher.note(
     "ujwk6Gf85i8sjuVmm2Ra9Y",
@@ -31,7 +20,9 @@ export const notify = async (
     ${
       sortedJobTItles.map((job) =>
         `${job.title}:\n Skills:${
-          userBullets.filter((bullet) => job.description.includes(bullet))
+          ALL_LANGUAGES_AND_TECHNOLOGIES.filter((bullet) =>
+            job.description.includes(bullet)
+          )
         }\nhttp://localhost:5173/job/${job.id}\n`
       ).join("\n")
     }`,
@@ -61,3 +52,43 @@ I am open to Senior Engineer roles but prioritize regular or junior roles.
 I am not as well equipped for lead and management roles. 
 I am not interested in non-software roles such as Mechanical Engineering or non-Engineering roles. 
 `;
+
+export const ALL_LANGUAGES_AND_TECHNOLOGIES = [
+  "Javascript",
+  "JavaScript",
+  "Typescript",
+  "TypeScript",
+  "C++",
+  "Python",
+  "Java",
+  "Ruby",
+  "Go",
+  "Swift",
+  "PHP",
+  "HTML",
+  "CSS",
+  "React",
+  "React.js",
+  "ReactJS",
+  "Angular",
+  "Vue",
+  "Node.js",
+  "NodeJS",
+  "Express",
+  "MongoDB",
+  "MySQL",
+  "PostgreSQL",
+  "AWS",
+  "GCP",
+  "Docker",
+  "Kubernetes",
+  "CI/CD",
+  "Rust",
+  "C#",
+  "Bash",
+  "Redis",
+  "GraphQL",
+  "Firebase",
+  "Supabase",
+  "Elasticsearch",
+];

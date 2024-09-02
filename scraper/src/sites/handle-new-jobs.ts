@@ -1,6 +1,6 @@
-import { supabase } from "../../clients/supabase";
-import { Job } from "../../util/types";
-import { notify } from "../notify";
+import { supabase } from "../clients/supabase";
+import { Job } from "../util/types";
+import { notify } from "../helpers/notify";
 
 export const handleNewJobs = async (
   newJobs: Job[],
