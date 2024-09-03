@@ -5,13 +5,15 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../util/types";
 import { filterExistingJobs } from "../helpers/filterExistingJobs";
-import { handleNewJobs } from "./handle-new-jobs";
+import { saveNewJobsToSupabase } from "./save-new-jobs-to-supabase";
 
 const WEBSITE = "Microsoft";
 const SITE_URL =
-  "https://jobs.careers.microsoft.com/global/en/search?q=software%20engineer&lc=United%20States&l=en_us&pg=1&pgSz=20&o=Relevance&flt=true";
+  "https://jobs.careers.microsoft.com/global/en/search?q=software%20engineer&lc=United%20States&ws=Up%20to%20100%25%20work%20from%20home&l=en_us&pg=1&pgSz=20&o=Relevance&flt=true";
 
 export const scrapeMicrosoft = async () => {
+  console.info("Starting Microsoft Job 💾");
+
   let browser: Browser | null = null;
   try {
     browser = await puppeteer.use(StealthPlugin()).launch({
@@ -43,6 +45,7 @@ export const scrapeMicrosoft = async () => {
           url: "https://jobs.careers.microsoft.com/global/en/job/" +
             jobIdMatch[1],
           description: "",
+          website: WEBSITE,
         };
       });
     });
@@ -53,7 +56,6 @@ export const scrapeMicrosoft = async () => {
     }
 
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
-    console.log("new jobs", newJobs);
 
     for (const newJob of newJobs) {
       console.info(`Fetching job description for ${newJob.title}`);
@@ -84,7 +86,8 @@ export const scrapeMicrosoft = async () => {
         throw new Error(`issue fetching job description: ${error}`);
       }
     }
-    handleNewJobs(newJobs, WEBSITE);
+    await saveNewJobsToSupabase(newJobs);
+    return newJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;
@@ -94,4 +97,3 @@ export const scrapeMicrosoft = async () => {
     }
   }
 };
-scrapeMicrosoft();

@@ -2,9 +2,8 @@ import { supabase } from "../clients/supabase";
 import { Job } from "../util/types";
 import { notify } from "../helpers/notify";
 
-export const handleNewJobs = async (
+export const saveNewJobsToSupabase = async (
   newJobs: Job[],
-  website: string,
 ) => {
   if (newJobs.length) {
     const { data, error } = await supabase
@@ -15,10 +14,6 @@ export const handleNewJobs = async (
     if (error || !data) {
       console.error("error from new job insert: ", error);
       throw error;
-    }
-    notify(data, website);
-    if (error) {
-      console.error("error from new job insert: ", error);
     }
   }
 };

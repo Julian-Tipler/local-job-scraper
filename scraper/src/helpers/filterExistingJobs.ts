@@ -1,8 +1,9 @@
 import { supabase } from "../clients/supabase";
 import { handleSupabaseError } from "../util/handle-error";
+import { Job } from "../util/types";
 
 export const filterExistingJobs = async (
-  jobs: { title: string; url: string; description: string }[],
+  jobs: Job[],
   website: string,
 ) => {
   const { data: existingJobs, error: existingJobsError } = await supabase

@@ -36,10 +36,10 @@ export const scrapeIndeed = async () => {
             title: element.textContent ? element.textContent.trim() : "",
             url: "https://www.indeed.com" + anchor.href,
             description: "",
+            website: WEBSITE,
           };
         });
       });
-    console.log("Indeed jobs", jobs);
     return jobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);

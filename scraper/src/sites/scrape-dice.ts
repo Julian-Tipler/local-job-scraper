@@ -1,15 +1,16 @@
 import puppeteer from "puppeteer-extra";
 import { filterExistingJobs } from "../helpers/filterExistingJobs";
-import { handleNewJobs } from "./handle-new-jobs";
 import { Browser } from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Job } from "../util/types";
+import { saveNewJobsToSupabase } from "./save-new-jobs-to-supabase";
 
 const WEBSITE = "Dice";
 const SITE_URL =
   "https://www.dice.com/jobs?q=software%20engineering&countryCode=US&radius=30&radiusUnit=mi&page=1&pageSize=20&filters.postedDate=ONE&filters.workplaceTypes=Remote&filters.employmentType=FULLTIME&language=en";
 
 export const scrapeDice = async () => {
+  console.info("Starting Dice Job 🎲");
   let browser: Browser | null = null;
   try {
     browser = await puppeteer.use(StealthPlugin()).launch({
@@ -32,6 +33,7 @@ export const scrapeDice = async () => {
           title: element.textContent ? element.textContent.trim() : "",
           url: "https://www.dice.com/job-detail/" + anchor.id,
           description: "",
+          website: WEBSITE,
         };
       });
     });
@@ -76,8 +78,7 @@ export const scrapeDice = async () => {
         );
       }
     }
-
-    handleNewJobs(newJobs, WEBSITE);
+    await saveNewJobsToSupabase(newJobs);
     return newJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
