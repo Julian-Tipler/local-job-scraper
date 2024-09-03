@@ -32,7 +32,6 @@ export const scrapeBuiltIn = async () => {
         title: jobTitle,
         url: `https://www.builtinaustin.com${job.attr("href")}`,
         description: "",
-        website: WEBSITE,
       });
     });
     if (jobs.length === NUM_JOBS) {
@@ -93,8 +92,8 @@ export const scrapeBuiltIn = async () => {
         throw new Error(`issue fetching job description: ${jobError}`);
       }
     }
-    await saveNewJobsToSupabase(newJobs);
-    return newJobs;
+    const savedJobs = await saveNewJobsToSupabase(newJobs);
+    return savedJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;

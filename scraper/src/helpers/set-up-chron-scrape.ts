@@ -10,20 +10,30 @@ import { notify } from "./notify";
 dotenv.config();
 
 export const setUpChronScrape = async () => {
-  // Schedule the BuiltIn scrape job to run every minute
-  cron.schedule("* * * * *", async () => {
-    await scrapeBuiltIn();
-  });
-
-  // Schedule the Dice scrape job to run every 10 minutes
   cron.schedule("*/5 * * * *", async () => {
-    await scrapeDice();
+    const builtinJobs = await scrapeBuiltIn();
+    const diceJobs = await scrapeDice();
+    const newJobsAllCompanies = {
+      "BuiltIn": builtinJobs,
+      "Dice": diceJobs,
+    };
+
+    notify(newJobsAllCompanies);
 
     // Blocked by Cloudflare atm
     // scrapeIndeedData();
   });
-  cron.schedule("*/10 * * * *", async () => {
-    await scrapeMicrosoft();
+  cron.schedule("*/30 * * * *", async () => {
+    const microsoftJobs = await scrapeMicrosoft();
+    const newJobsAllCompanies = {
+      "Microsoft": microsoftJobs,
+    };
+    await notify(newJobsAllCompanies);
+
+    await supabase
+      .from("jobs")
+      .delete()
+      .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
   });
 
   // Initial calls to the scrape functions
@@ -31,14 +41,13 @@ export const setUpChronScrape = async () => {
   const microsoftJobs = await scrapeMicrosoft();
   const builtinJobs = await scrapeBuiltIn();
   const diceJobs = await scrapeDice();
-  const newJobsAllCompanies = [...microsoftJobs, ...builtinJobs, ...diceJobs];
+  const newJobsAllCompanies = {
+    "Microsoft": microsoftJobs,
+    "BuiltIn": builtinJobs,
+    "Dice": diceJobs,
+  };
 
-  notify(newJobsAllCompanies, "All");
-
-  await supabase
-    .from("jobs")
-    .delete()
-    .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
+  notify(newJobsAllCompanies);
 };
 
 // const scrapeCareerBuilderData = async () => {

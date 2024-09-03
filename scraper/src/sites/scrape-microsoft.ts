@@ -45,7 +45,6 @@ export const scrapeMicrosoft = async () => {
           url: "https://jobs.careers.microsoft.com/global/en/job/" +
             jobIdMatch[1],
           description: "",
-          website: WEBSITE,
         };
       });
     });
@@ -86,8 +85,9 @@ export const scrapeMicrosoft = async () => {
         throw new Error(`issue fetching job description: ${error}`);
       }
     }
-    await saveNewJobsToSupabase(newJobs);
-    return newJobs;
+
+    const savedJobs = await saveNewJobsToSupabase(newJobs);
+    return savedJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;

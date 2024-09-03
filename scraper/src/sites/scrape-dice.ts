@@ -78,8 +78,8 @@ export const scrapeDice = async () => {
         );
       }
     }
-    await saveNewJobsToSupabase(newJobs);
-    return newJobs;
+    const savedJobs = await saveNewJobsToSupabase(newJobs);
+    return savedJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;
