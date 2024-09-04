@@ -27,23 +27,20 @@ export const handleScrapeAndRedirect = async (button) => {
 const extractJobParameters = async () => {
   console.log("Extracting job parameters...");
   // Common content selectors: These should be adjusted based on common patterns found in your target pages.
-
   const contentSelectors = [
-    "job",
-    ".post-body",
-    ".entry-content",
-    "main", // Some sites use main for their primary content
-    'div[role="main"]', // A common attribute for main content areas
+    // "main", // Some sites use main for their primary content
+    // 'div[role="main"]', // A common attribute for main content areas
   ];
 
   // Find the first matching element for these selectors
   let content = contentSelectors.reduce((found, selector) => {
     return found || document.querySelector(selector);
   }, null);
-
   if (!content) {
     content = document.body;
   }
+  console.log("content2", content.innerText);
+
   // Here, you might want to filter or process the text to remove unwanted parts like ads, navigation elements, etc.
   const cleanedText = await cleanText(content.innerText);
   const jobParams = await openAIParseText(cleanedText);

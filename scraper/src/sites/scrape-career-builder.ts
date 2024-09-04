@@ -1,9 +1,7 @@
 import puppeteer from "puppeteer-extra";
 import { filterExistingJobs } from "../helpers/filterExistingJobs";
-import { handleNewJobs } from "./handle-new-jobs";
 import { Browser } from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { exec } from "child_process";
 
 const WEBSITE = "Career Builder";
 const URL =
@@ -66,7 +64,6 @@ export const scrapeCareerBuilder = async () => {
     //   // await page.goBack();
     // }
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
-    handleNewJobs(newJobs, WEBSITE);
     return newJobs;
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
