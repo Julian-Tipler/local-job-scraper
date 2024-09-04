@@ -92,11 +92,11 @@ export const scrapeBuiltIn = async () => {
         throw new Error(`issue fetching job description: ${jobError}`);
       }
     }
-    const savedJobs = await saveNewJobsToSupabase(newJobs);
-    return savedJobs;
+
+    return newJobs;
   } catch (error) {
-    console.error(`Error scraping the website: ${error.message}`);
-    throw error;
+    console.error(`Error scraping ${WEBSITE}: ${error.message}`);
+    return [];
   } finally {
     if (browser) {
       await browser.close();

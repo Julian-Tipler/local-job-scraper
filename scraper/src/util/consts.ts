@@ -36,6 +36,4 @@ export const ALL_LANGUAGES_AND_TECHNOLOGIES = [
   "Firebase",
   "Supabase",
   "Elasticsearch",
-  "Git",
-  "GitHub"
 ];

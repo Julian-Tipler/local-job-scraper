@@ -33,7 +33,6 @@ export const scrapeDice = async () => {
           title: element.textContent ? element.textContent.trim() : "",
           url: "https://www.dice.com/job-detail/" + anchor.id,
           description: "",
-          website: WEBSITE,
         };
       });
     });
@@ -78,11 +77,11 @@ export const scrapeDice = async () => {
         );
       }
     }
-    const savedJobs = await saveNewJobsToSupabase(newJobs);
-    return savedJobs;
+    return newJobs;
   } catch (error) {
-    console.error(`Error scraping the website: ${error.message}`);
-    throw error;
+    console.error(`Error scraping ${WEBSITE}: ${error.message}`);
+
+    return [];
   } finally {
     if (browser) {
       await browser.close();

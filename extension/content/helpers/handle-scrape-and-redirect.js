@@ -28,8 +28,8 @@ const extractJobParameters = async () => {
   console.log("Extracting job parameters...");
   // Common content selectors: These should be adjusted based on common patterns found in your target pages.
   const contentSelectors = [
-    "main", // Some sites use main for their primary content
-    'div[role="main"]', // A common attribute for main content areas
+    // "main", // Some sites use main for their primary content
+    // 'div[role="main"]', // A common attribute for main content areas
   ];
 
   // Find the first matching element for these selectors
