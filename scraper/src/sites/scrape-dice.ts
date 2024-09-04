@@ -1,9 +1,9 @@
 import puppeteer from "puppeteer-extra";
-import { filterExistingJobs } from "../helpers/filterExistingJobs";
+import { filterExistingJobs } from "../helpers/filter-existing-jobs";
 import { Browser } from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Job } from "../util/types";
-import { saveNewJobsToSupabase } from "./save-new-jobs-to-supabase";
+import { saveNewJobsToSupabase } from "../helpers/save-new-jobs-to-supabase";
 
 const WEBSITE = "Dice";
 const SITE_URL =

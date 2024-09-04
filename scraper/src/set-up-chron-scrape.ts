@@ -4,7 +4,7 @@ import { scrapeBuiltIn } from "./sites/scrape-built-in";
 import { scrapeDice } from "./sites/scrape-dice";
 import { scrapeMicrosoft } from "./sites/scrape-microsoft";
 import { Job } from "./util/types";
-import { saveNewJobsToSupabase } from "./sites/save-new-jobs-to-supabase";
+import { saveNewJobsToSupabase } from "./helpers/save-new-jobs-to-supabase";
 import { notify } from "./helpers/notify";
 import { sortByRelevance } from "./helpers/sort-by-relevance";
 dotenv.config();

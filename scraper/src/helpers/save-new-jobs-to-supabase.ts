@@ -1,6 +1,6 @@
 import { supabase } from "../clients/supabase";
 import { Job } from "../util/types";
-import { notify } from "../helpers/notify";
+import { notify } from "./notify";
 
 export const saveNewJobsToSupabase = async (
   newJobs: Job[],
