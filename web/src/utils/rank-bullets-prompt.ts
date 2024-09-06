@@ -46,7 +46,7 @@ export const rankBulletsPrompt = (
     "
     ---
 
-    1,2,3
+    4,2,3,1
     "
     This example is incorrect because it:
     a. does not include the bullets ranked by relevancy to the job description, along with a description for why you ranked each bullet in that order.
@@ -69,6 +69,3 @@ ${jobDescription}
 
 `;
 };
-
-// Do not include any text, spaces or brackets. Only return the numbers separated by commas.
-// You should only return the numbers separated by commas
