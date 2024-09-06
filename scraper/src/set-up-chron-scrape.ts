@@ -21,6 +21,8 @@ const SCRAPE_MAP: ScrapeMap = {
 
 export const setUpChronScrape = async () => {
   cron.schedule("*/5 * * * *", async () => {
+    console.info("Running cron job");
+    await complete(Object.keys(SCRAPE_MAP));
   });
 
   await complete(Object.keys(SCRAPE_MAP));

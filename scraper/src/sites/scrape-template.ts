@@ -2,8 +2,7 @@ import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../util/types";
-import { handleNewJobs } from "./handle-new-jobs";
-import { filterExistingJobs } from "../helpers/filterExistingJobs";
+import { filterExistingJobs } from "../helpers/filter-existing-jobs";
 
 const WEBSITE = "<website name here>";
 const SITE_URL = "<insert url here>";
@@ -19,8 +18,6 @@ export const scrapeTemplate = async (fetchIndex, fetchJobDescriptions) => {
     const jobs = await fetchIndex(browser);
     const newJobs = await filterExistingJobs(jobs, WEBSITE);
     const newJobsWithDescription = await fetchJobDescriptions(browser, newJobs);
-
-    handleNewJobs(newJobs, WEBSITE);
   } catch (error) {
     console.error(`Error scraping the website: ${error.message}`);
     throw error;
