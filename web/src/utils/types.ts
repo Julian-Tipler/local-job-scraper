@@ -25,3 +25,10 @@ export type Group = {
   name: string;
   created_at: string;
 };
+
+export type Skill = {
+  id: string;
+  title: string;
+  aliases: string[];
+  type: string;
+};

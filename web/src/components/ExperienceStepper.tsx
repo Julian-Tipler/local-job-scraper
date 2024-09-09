@@ -4,6 +4,8 @@ import { Experience as ExperienceType } from "../utils/types";
 import { Job } from "../utils/types";
 import Experience from "./Experience";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
+import { Languages } from "./Languages";
+import { Technologies } from "./Technologies";
 
 export const ExperienceStepper = ({ job }: { job: Job }) => {
   const [step, setStep] = useState(0);
@@ -60,7 +62,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
       {/* Left Column Title */}
       <h1 className="px-4 ">Resume Creator</h1>
       {/* Middle Section */}
-      {experiences.map((experience, i) => {
+      {/* {experiences.map((experience, i) => {
         return (
           <Experience
             key={experience.id}
@@ -69,7 +71,9 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
             job={job}
           />
         );
-      })}
+      })} */}
+      <Languages selected={2 === step} />
+      {/* <Technologies selected={3 === step} /> */}
       {/* Navigation Buttons */}
       <div className="button-container flex gap-4 p-4">
         <button
@@ -85,9 +89,9 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
         </button>
         <button
           onClick={handleNext}
-          disabled={step === experiences.length - 1}
+          disabled={step === experiences.length - 1 + 2}
           className={`px-4 py-2 rounded ${
-            step === experiences.length - 1
+            step === experiences.length - 1 + 2
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-700"
           }`}
@@ -96,9 +100,9 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
         </button>
         <button
           onClick={() => submitForm()}
-          disabled={step !== experiences.length - 1 || bullets.length !== 4}
+          disabled={step !== experiences.length - 1 + 2 || bullets.length !== 4}
           className={`px-4 py-2 rounded ${
-            step !== experiences.length - 1
+            step !== experiences.length - 1 + 2
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-green-500 hover:bg-green-700"
           }`}
