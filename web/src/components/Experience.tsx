@@ -51,10 +51,10 @@ const Experience = ({
 
         const responseText = chatCompletion?.choices[0]?.message.content;
 
-        // console.log("OpenAI Response\n", responseText);
         if (!responseText) {
           throw new Error("general issue with cohere response");
         }
+        console.log("OpenAI Response\n", responseText);
 
         const split = responseText.split("---");
         if (!(split.length === 2)) {
