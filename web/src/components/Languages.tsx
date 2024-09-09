@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Skill } from "../utils/types";
 import { fetchUserSkills } from "../api/fetchUserSkills";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const Languages = ({ selected }: { selected: boolean }) => {
   const [languages, setLanguages] = useState<Skill[]>([]);
   useEffect(() => {
     fetchUserSkills(1)
       .then((skills) => {
-        const languages = skills.filter((skill) => skill.type === "language");
-        setLanguages(languages);
+        const userLanguages = skills.filter(
+          (skill) => skill.type === "language"
+        );
+        setLanguages(userLanguages);
       })
       .catch((error) => {
         console.error("Error fetching skills:", error);

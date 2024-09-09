@@ -59,7 +59,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
     );
   }
   return (
-    <div className="flex flex-col w-1/2 p-4 h-full">
+    <div className="flex flex-col h-full">
       {/* Left Column Title */}
       <h1 className="px-4 ">Resume Creator</h1>
       {/* Middle Section */}
@@ -69,15 +69,14 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
             return (
               <Experience key={i} index={i} selected={i === step} job={job} />
             );
-          // case "languages":
-          //   return <Languages key={i} selected={i === step} />;
-          // case "technologies":
-          //   return <Technologies key={i} selected={i === step} />;
+          case "languages":
+            return <Languages key={i} selected={i === step} />;
+          case "technologies":
+            return <Technologies key={i} selected={i === step} />;
           default:
             return null;
         }
       })}
-      <Languages selected={2 === step} />
       {/* <Technologies selected={3 === step} /> */}
       {/* Navigation Buttons */}
       <div className="button-container flex gap-4 p-4">

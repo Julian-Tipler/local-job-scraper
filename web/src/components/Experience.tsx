@@ -195,9 +195,9 @@ export const Experience = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <section className="flex flex-col flex-1 p-4 border overflow-hidden">
+      <section className="flex flex-col flex-1 p-4 border overflow-hidden w-full gap-2">
         <h2>{resume[index].title}</h2>
-        <ul className="flex-1 overflow-y-auto flex flex-col gap-1">
+        <ul className="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
           {resumeEntryValues.map((bullet, index) => (
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
           ))}
