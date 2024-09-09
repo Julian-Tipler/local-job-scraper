@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../clients/supabase";
 import { Experience as ExperienceType } from "../utils/types";
 import { Job } from "../utils/types";
-import Experience from "./Experience";
+import { Experience } from "./Experience";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
 import { Languages } from "./Languages";
 import { Technologies } from "./Technologies";
@@ -10,13 +10,14 @@ import { Technologies } from "./Technologies";
 export const ExperienceStepper = ({ job }: { job: Job }) => {
   const [step, setStep] = useState(0);
   const [experiences, setExperiences] = useState<ExperienceType[]>([]);
-  const { submitForm, bullets, submitted, urls } = useSubmissionContext();
+  const { submitForm, submitted, urls, resume } = useSubmissionContext();
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
         const { data: experiences, error } = await supabase
           .from("experiences")
-          .select("*");
+          .select("*")
+          .eq("user_id", 1);
 
         if (error) {
           throw new Error(error.message);
@@ -62,16 +63,20 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
       {/* Left Column Title */}
       <h1 className="px-4 ">Resume Creator</h1>
       {/* Middle Section */}
-      {/* {experiences.map((experience, i) => {
-        return (
-          <Experience
-            key={experience.id}
-            experience={experience}
-            selected={i === step}
-            job={job}
-          />
-        );
-      })} */}
+      {resume.map((resumeEntry, i) => {
+        switch (resumeEntry.type) {
+          case "experience":
+            return (
+              <Experience key={i} index={i} selected={i === step} job={job} />
+            );
+          // case "languages":
+          //   return <Languages key={i} selected={i === step} />;
+          // case "technologies":
+          //   return <Technologies key={i} selected={i === step} />;
+          default:
+            return null;
+        }
+      })}
       <Languages selected={2 === step} />
       {/* <Technologies selected={3 === step} /> */}
       {/* Navigation Buttons */}
@@ -100,7 +105,7 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
         </button>
         <button
           onClick={() => submitForm()}
-          disabled={step !== experiences.length - 1 + 2 || bullets.length !== 4}
+          disabled={step !== experiences.length - 1 + 2 || resume.length !== 4}
           className={`px-4 py-2 rounded ${
             step !== experiences.length - 1 + 2
               ? "bg-gray-300 cursor-not-allowed"

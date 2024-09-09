@@ -2,10 +2,13 @@ import { useEffect, useRef } from "react";
 import { DndProvider, useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { supabase } from "../clients/supabase";
-import { Bullet, Experience as ExperienceType, Job } from "../utils/types";
+import { Bullet, Job } from "../utils/types";
 import { rankBulletsPrompt } from "../utils/rank-bullets-prompt";
 import { openai } from "../utils/clients/openai";
-import { useSubmissionContext } from "../contexts/SubmissionContext";
+import {
+  ResumeEntry,
+  useSubmissionContext,
+} from "../contexts/SubmissionContext";
 
 // Ideally the order of the experiences would be constant and saved in the db
 
@@ -13,18 +16,19 @@ const ItemTypes = {
   BULLET: "bullet",
 };
 
-const Experience = ({
-  experience,
+export const Experience = ({
+  index,
   selected,
   job,
 }: {
-  experience: ExperienceType;
+  index: number;
   selected: boolean;
   job: Job;
 }) => {
-  const { bullets, setBullets } = useSubmissionContext();
-  console.log(bullets);
-  const entry = bullets[parseInt(experience.id) - 1];
+  const { resume, setResume } = useSubmissionContext();
+
+  const experienceId = index + 1;
+  const resumeEntryValues = resume[index].values as Bullet[];
 
   useEffect(() => {
     const fetchBullets = async () => {
@@ -33,7 +37,7 @@ const Experience = ({
           .from("bullets")
           .select("*")
           .order("id", { ascending: true })
-          .eq("experienceId", experience.id);
+          .eq("experienceId", experienceId);
 
         if (error || !bullets) {
           throw new Error(error.message);
@@ -68,10 +72,10 @@ const Experience = ({
           .map((rank: string) => {
             return bullets[parseInt(rank) - 1];
           });
-        setBullets((prev: Bullet[][]) => {
-          const dupeNewForm = [...prev];
-          dupeNewForm[parseInt(experience.id) - 1] = ranking;
-          return dupeNewForm;
+        setResume((prev: ResumeEntry[]) => {
+          const dupeMockResume = [...prev];
+          dupeMockResume[index].values = ranking;
+          return dupeMockResume;
         });
       } catch (error) {
         console.error("Error fetching bullets:", error);
@@ -81,40 +85,40 @@ const Experience = ({
   }, []);
 
   const moveBullet = (dragIndex: number, hoverIndex: number) => {
-    const dragBullet = entry[dragIndex];
-    const newBullets = [...entry];
+    const dragBullet = resumeEntryValues[dragIndex];
+    const newBullets = resumeEntryValues;
     newBullets.splice(dragIndex, 1);
     newBullets.splice(hoverIndex, 0, dragBullet);
-    setBullets((prev: Bullet[][]) => {
+    setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
-      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      dupeNewForm[index].values = newBullets;
       return dupeNewForm;
     });
   };
 
   const deleteBullet = (index: number) => {
-    const newBullets = [...entry];
+    const newBullets = [...resumeEntryValues];
     newBullets.splice(index, 1);
-    setBullets((prev: Bullet[][]) => {
+    setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
-      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      dupeNewForm[index].values = newBullets;
       return dupeNewForm;
     });
   };
 
   const addBullet = (bulletContent: string) => {
     const newBullets = [
-      ...entry,
+      ...resumeEntryValues,
       {
         content: bulletContent,
         id: String(Math.random() * 1000),
-        experienceId: experience.id,
+        experienceId: String(experienceId),
         created_at: new Date().toISOString(),
       },
     ];
-    setBullets((prev: Bullet[][]) => {
+    setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
-      dupeNewForm[parseInt(experience.id) - 1] = newBullets;
+      dupeNewForm[index].values = newBullets;
       return dupeNewForm;
     });
   };
@@ -185,16 +189,16 @@ const Experience = ({
     return null;
   }
 
-  if (!entry?.length) {
+  if (!resume[index].values.length) {
     return <div>loading...</div>;
   }
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <main className="flex flex-col flex-1 p-4 border overflow-hidden">
-        <h2>{experience.title}</h2>
+      <section className="flex flex-col flex-1 p-4 border overflow-hidden">
+        <h2>{resume[index].title}</h2>
         <ul className="flex-1 overflow-y-auto flex flex-col gap-1">
-          {entry.map((bullet, index) => (
+          {resumeEntryValues.map((bullet, index) => (
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
           ))}
         </ul>
@@ -212,9 +216,7 @@ const Experience = ({
             }}
           />
         </form>
-      </main>
+      </section>
     </DndProvider>
   );
 };
-
-export default Experience;
