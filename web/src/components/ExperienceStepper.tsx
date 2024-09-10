@@ -71,8 +71,8 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
             );
           case "languages":
             return <Languages key={i} selected={i === step} />;
-          case "technologies":
-            return <Technologies key={i} selected={i === step} />;
+          // case "technologies":
+          //   return <Technologies key={i} selected={i === step} />;
           default:
             return null;
         }
