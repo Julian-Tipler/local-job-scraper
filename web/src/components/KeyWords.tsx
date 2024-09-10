@@ -32,13 +32,10 @@ export const KeyWords = () => {
       });
   }, []);
 
-
   const selectedKeyWords = useMemo(() => {
-    if (keyWords.length === 0) return [];
+    if (keyWords.length === 0 || !userSkills.length) return [];
     return keyWords
       .map((word) => {
-        console.log("word", word);
-        console.log("userSkill aliases", userSkills);
         return {
           word,
           bold: userSkills.some((userSkill) => {
@@ -57,8 +54,7 @@ export const KeyWords = () => {
       });
   }, [keyWords, userSkills]);
 
-
-  if (!keyWords.length) return <div>Loading key words...</div>;
+  if (!selectedKeyWords.length) return <div>Loading key words...</div>;
   return (
     <>
       {selectedKeyWords.map((selectedKeyWord, index) => (

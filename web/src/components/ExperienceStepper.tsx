@@ -3,8 +3,8 @@ import { supabase } from "../clients/supabase";
 import { Experience as ExperienceType } from "../utils/types";
 import { Experience } from "./Experience";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
-import { Languages } from "./Languages";
-import { Technologies } from "./Technologies";
+import { Skills } from "./Skills";
+// import { Technologies } from "./Technologies";
 import { useJobContext } from "../contexts/JobContext";
 
 export const ExperienceStepper = () => {
@@ -74,7 +74,9 @@ export const ExperienceStepper = () => {
               <Experience key={i} index={i} selected={i === step} job={job} />
             );
           case "languages":
-            return <Languages key={i} selected={i === step} />;
+            return <Skills key={i} selected={i === step} variant={false} />;
+          case "technologies":
+            return <Skills key={i} selected={i === step} variant={true} />;
           // case "technologies":
           //   return <Technologies key={i} selected={i === step} />;
           default:

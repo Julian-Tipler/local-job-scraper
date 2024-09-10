@@ -5,7 +5,9 @@ export const fetchUserSkills = async (userId: number) => {
     const { data, error } = await supabase
       .from("users")
       .select("skills(*)")
-      .eq("id", userId);
+      .eq("id", userId)
+      .order("id", { foreignTable: "skills", ascending: true });
+
     if (error) {
       throw new Error(error.message);
     }

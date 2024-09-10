@@ -1,7 +1,7 @@
-import { skill } from "./types";
+import { Skill } from "./types";
 
 export const rankSkillsPrompt = (
-  skills: skill[],
+  skills: Skill[],
   jobDescription: string,
 ) => {
   const returnInstructions = `Return three things. 
@@ -60,7 +60,7 @@ ${returnInstructions}
 skills:
 ${
     skills.map((skill, i) => {
-      return `${i + 1}. ${skill.content}`;
+      return `${i + 1}. ${skill.title}`;
     }).join("\n")
   }
 

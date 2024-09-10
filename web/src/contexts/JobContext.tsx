@@ -58,18 +58,18 @@ export function JobContextProvider({ children }: JobContextProviderProps) {
       });
   }, []);
 
-  console.log("allSkillAliases", allSkillAliases);
-
+  // All skill aliases for key words
   const keyWords = useMemo(() => {
     if (!job?.description || !allSkillAliases.length) return [];
-    const splitJobDescription = job?.description.split(/\W+/);
+
+    const splitJobDescription: string[] =
+      job?.description.match(/(?:[A-Za-z0-9#+-]+|\S)/g) || [];
+
     const keyWordsInDescription = allSkillAliases.filter((word) =>
       splitJobDescription.includes(word)
     );
     return keyWordsInDescription;
   }, [job?.description, allSkillAliases]);
-
-  console.log("keyWords", keyWords);
 
   const value = {
     job,
