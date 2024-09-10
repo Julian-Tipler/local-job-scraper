@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../clients/supabase";
-import { Group, Job } from "../utils/types";
+import { useJobContext } from "../contexts/JobContext";
+import { Group } from "../utils/types";
 
-export const GroupsDropDown = ({ job }: { job: Job }) => {
+export const GroupsDropDown = () => {
+  const { job } = useJobContext();
   const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {

@@ -1,10 +1,8 @@
 import { createContext, useContext, ReactNode, useState } from "react";
-import { Bullet } from "../utils/types";
+import { Bullet, Skill } from "../utils/types";
 const VITE_SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL as string;
 
 type SubmissionContextType = {
-  bullets: Bullet[][];
-  setBullets: React.Dispatch<React.SetStateAction<Bullet[][]>>;
   submitForm: () => Promise<void>;
   submitted: boolean;
   urls: {
@@ -17,7 +15,50 @@ type SubmissionContextType = {
       docUrl: string;
     }>
   >;
+  resume: ResumeEntry[];
+  setResume: React.Dispatch<React.SetStateAction<ResumeEntry[]>>;
 };
+
+export type ResumeEntry =
+  | {
+      type: "experience";
+      title: string;
+      values: Bullet[];
+    }
+  | {
+      type: "languages";
+      title: string;
+      values: Skill[];
+    }
+  | {
+      type: "technologies";
+      title: string;
+      values: Skill[];
+    };
+
+// This will be a db entry when I switch to firebase
+export const MOCK_RESUME: ResumeEntry[] = [
+  {
+    type: "experience",
+    title: "WisePilot",
+    values: [],
+  },
+  {
+    type: "experience",
+    title: "Worktango",
+    values: [],
+  },
+  {
+    type: "languages",
+    title: "Languages",
+    values: [],
+  },
+  {
+    type: "technologies",
+    title: "Technologies",
+    values: [],
+  },
+];
 
 const SubmissionContext = createContext<SubmissionContextType>(
   {} as SubmissionContextType
@@ -30,7 +71,7 @@ interface SubmissionContextProviderProps {
 export function SubmissionContextProvider({
   children,
 }: SubmissionContextProviderProps) {
-  const [bullets, setBullets] = useState<Bullet[][]>([]);
+  const [resume, setResume] = useState<ResumeEntry[]>(MOCK_RESUME);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [urls, setUrls] = useState<{
     pdfUrl: string;
@@ -38,10 +79,12 @@ export function SubmissionContextProvider({
   }>({ pdfUrl: "", docUrl: "" });
 
   const submitForm = async () => {
-    const bulletContent = bullets.map((experience: Bullet[]) => {
-      return experience.map((bullet) => {
-        return bullet.content;
-      });
+    const bulletContent = resume.map((resumeEntry: ResumeEntry) => {
+      if (resumeEntry.type === "experience") {
+        return resumeEntry.values.map((value) => value.content);
+      } else {
+        return resumeEntry.values.map((value) => value.title);
+      }
     });
     const sanitizedData = bulletContent.map((bullet) =>
       bullet.map((text) => text.replace(/%/g, "__PERCENT__"))
@@ -61,8 +104,8 @@ export function SubmissionContextProvider({
   };
 
   const value = {
-    bullets,
-    setBullets,
+    resume,
+    setResume,
     submitForm,
     submitted,
     urls,

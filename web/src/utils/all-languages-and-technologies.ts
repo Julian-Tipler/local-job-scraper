@@ -1,7 +1,5 @@
 export const ALL_LANGUAGES_AND_TECHNOLOGIES = [
-  "Javascript",
   "JavaScript",
-  "Typescript",
   "TypeScript",
   "C++",
   "Python",
@@ -13,8 +11,6 @@ export const ALL_LANGUAGES_AND_TECHNOLOGIES = [
   "HTML",
   "CSS",
   "React",
-  "React.js",
-  "ReactJS",
   "Angular",
   "Vue",
   "Node.js",
