@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Skill } from "../utils/types";
 import { fetchUserSkills } from "../api/fetchUserSkills";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -23,11 +23,13 @@ export const Skills = ({
   variant: boolean;
 }) => {
   const { resume, setResume } = useSubmissionContext();
+
+  const [unusedUserSkills, setUnusedUserSkills] = useState<Skill[]>([]);
   const { keyWords } = useJobContext();
 
-  const index = variant ? 3 : 2;
+  const resumeIndex = variant ? 3 : 2;
 
-  const resumeEntryValues = resume[index].values as Skill[];
+  const resumeEntryValues = resume[resumeIndex].values as Skill[];
 
   const { job } = useJobContext();
   useEffect(() => {
@@ -38,15 +40,22 @@ export const Skills = ({
           (skill) => skill.type === (variant ? "technology" : "language")
         );
 
-        const filteredUserSkills = userSkills.filter((userSkill) => {
-          return userSkill.aliases.some((alias) =>
-            keyWords.includes(alias)
-          );
+        const relevantUserSkills: Skill[] = [];
+        const unusedUserSkills: Skill[] = [];
+
+        userSkills.forEach((userSkill) => {
+          if (userSkill.aliases.some((alias) => keyWords.includes(alias))) {
+            relevantUserSkills.push(userSkill);
+          } else {
+            unusedUserSkills.push(userSkill);
+          }
         });
+
+        setUnusedUserSkills(unusedUserSkills);
 
         setResume((prev: ResumeEntry[]) => {
           const dupeMockResume = [...prev];
-          dupeMockResume[index].values = filteredUserSkills;
+          dupeMockResume[resumeIndex].values = relevantUserSkills;
           return dupeMockResume;
         });
       })
@@ -62,7 +71,7 @@ export const Skills = ({
     newSkills.splice(hoverIndex, 0, dragSkill);
     setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
-      dupeNewForm[index].values = newSkills;
+      dupeNewForm[resumeIndex].values = newSkills;
       return dupeNewForm;
     });
   };
@@ -71,10 +80,12 @@ export const Skills = ({
     const newSkills = [...resumeEntryValues];
     newSkills.splice(index, 1);
     setResume((prev: ResumeEntry[]) => {
+      console.log(newSkills, prev);
       const dupeNewForm = [...prev];
-      dupeNewForm[index].values = newSkills;
+      dupeNewForm[resumeIndex].values = newSkills;
       return dupeNewForm;
     });
+    setUnusedUserSkills((prev) => [...prev, resumeEntryValues[index]]);
   };
 
   const addSkill = (skillContent: string) => {
@@ -90,7 +101,7 @@ export const Skills = ({
     ];
     setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
-      dupeNewForm[index].values = newSkills;
+      dupeNewForm[resumeIndex].values = newSkills;
       return dupeNewForm;
     });
   };
@@ -141,7 +152,7 @@ export const Skills = ({
     return (
       <li
         ref={ref}
-        className="relative border-2 border-dashed border-gray-400 p-4 rounded-md cursor-move"
+        className="relative border-2 border-dashed border-gray-400 p-2 rounded-md cursor-move"
         style={{ opacity: isDragging ? 0.5 : 1 }}
         key={skill.id}
       >
@@ -156,6 +167,16 @@ export const Skills = ({
     );
   };
 
+  const moveFromUnused = (skill: Skill) => {
+    const newSkills = [...resumeEntryValues, skill];
+    setResume((prev: ResumeEntry[]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[resumeIndex].values = newSkills;
+      return dupeNewForm;
+    });
+    setUnusedUserSkills((prev) => prev.filter((s) => s.id !== skill.id));
+  };
+
   if (!selected) {
     return null;
   }
@@ -163,10 +184,27 @@ export const Skills = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <section className="flex flex-col flex-1 p-4 border overflow-hidden w-full gap-2">
-        <h2>{resume[index].title}</h2>
-        <ul className="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
+        <h2>{resume[resumeIndex].title}</h2>
+        <h3>used</h3>
+        <ul className="flex-[2_2_0%] overflow-y-auto flex flex-col gap-1 px-3">
           {resumeEntryValues.map((skill, index) => (
-            <SkillItem key={skill.id} skill={skill} index={index} />
+            <SkillItem
+              key={`used-skill-${skill.id}`}
+              skill={skill}
+              index={index}
+            />
+          ))}
+        </ul>
+        <h3>unused</h3>
+        <ul className="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
+          {unusedUserSkills.map((skill) => (
+            <li
+              onClick={() => moveFromUnused(skill)}
+              key={`unused-skill-${skill.id}`}
+              className="relative border-2 border-dashed border-gray-400 p-2 rounded-md cursor-move"
+            >
+              {skill.title}
+            </li>
           ))}
         </ul>
         <form>
