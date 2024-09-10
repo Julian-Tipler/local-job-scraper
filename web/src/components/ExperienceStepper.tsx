@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../clients/supabase";
 import { Experience as ExperienceType } from "../utils/types";
-import { Job } from "../utils/types";
 import { Experience } from "./Experience";
 import { useSubmissionContext } from "../contexts/SubmissionContext";
 import { Languages } from "./Languages";
 import { Technologies } from "./Technologies";
+import { useJobContext } from "../contexts/JobContext";
 
-export const ExperienceStepper = ({ job }: { job: Job }) => {
+export const ExperienceStepper = () => {
+  const { job } = useJobContext();
+
   const [step, setStep] = useState(0);
   const [experiences, setExperiences] = useState<ExperienceType[]>([]);
   const { submitForm, submitted, urls, resume } = useSubmissionContext();
@@ -58,6 +60,8 @@ export const ExperienceStepper = ({ job }: { job: Job }) => {
       </div>
     );
   }
+  if (!job) return <div>Loading job...</div>;
+
   return (
     <div className="flex flex-col h-full">
       {/* Left Column Title */}
