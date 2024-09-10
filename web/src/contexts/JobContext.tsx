@@ -4,16 +4,15 @@ import {
   ReactNode,
   useState,
   useEffect,
+  useMemo,
 } from "react";
 import { Job } from "../utils/types";
 import { supabase } from "../clients/supabase";
-import { ALL_LANGUAGES_AND_TECHNOLOGIES } from "../utils/all-languages-and-technologies";
 
 type JobContextType = {
   job: Job | null;
   setJob: (job: Job | null) => void;
   keyWords: string[];
-  setKeyWords: (keyWords: string[]) => void;
 };
 
 const JobContext = createContext<JobContextType>({} as JobContextType);
@@ -24,14 +23,14 @@ interface JobContextProviderProps {
 
 export function JobContextProvider({ children }: JobContextProviderProps) {
   const [job, setJob] = useState<Job | null>(null);
-  const [keyWords, setKeyWords] = useState<string[]>([]);
+  const [allSkillAliases, setAllSkillAliases] = useState<string[]>([]);
 
   const jobId = window.location.pathname.split("/")[2];
 
   useEffect(() => {
     supabase
       .from("jobs")
-      .select()
+      .select("*")
       .eq("id", jobId)
       .then((response) => {
         if (response.error) {
@@ -43,21 +42,39 @@ export function JobContextProvider({ children }: JobContextProviderProps) {
   }, [jobId]);
 
   useEffect(() => {
-    if (job?.description) {
-      const keyWordsInDescription = ALL_LANGUAGES_AND_TECHNOLOGIES.filter(
-        (word) => job.description.split("").includes(word)
-      );
-      setKeyWords(keyWordsInDescription);
-    }
-  }, [job]);
+    supabase
+      .from("skills")
+      .select("*")
+      .then(({ data, error }) => {
+        if (error || !data) {
+          console.error("Error fetching skills:", error);
+          return;
+        }
+        const allSkillAliases: string[] = [];
+        data.forEach((skill) => {
+          allSkillAliases.push(...skill.aliases);
+        });
+        setAllSkillAliases(allSkillAliases);
+      });
+  }, []);
 
-  console.log("job", job);
+  console.log("allSkillAliases", allSkillAliases);
+
+  const keyWords = useMemo(() => {
+    if (!job?.description || !allSkillAliases.length) return [];
+    const splitJobDescription = job?.description.split(/\W+/);
+    const keyWordsInDescription = allSkillAliases.filter((word) =>
+      splitJobDescription.includes(word)
+    );
+    return keyWordsInDescription;
+  }, [job?.description, allSkillAliases]);
+
+  console.log("keyWords", keyWords);
 
   const value = {
     job,
     setJob,
     keyWords,
-    setKeyWords,
   };
 
   return <JobContext.Provider value={value}>{children}</JobContext.Provider>;
