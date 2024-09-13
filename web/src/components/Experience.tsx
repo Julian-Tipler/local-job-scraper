@@ -96,9 +96,10 @@ export const Experience = ({
     });
   };
 
-  const deleteBullet = (index: number) => {
+  const deleteBullet = (deleteIndex: number) => {
     const newBullets = [...resumeEntryValues];
-    newBullets.splice(index, 1);
+    newBullets.splice(deleteIndex, 1);
+    console.log(newBullets);
     setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
       dupeNewForm[index].values = newBullets;
@@ -139,17 +140,23 @@ export const Experience = ({
           return;
         }
 
+        // Gives you the rectangle of the item being hovered over
         const hoverBoundingRect = ref.current?.getBoundingClientRect();
         const hoverMiddleY =
           (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        const hoverUpwardThreshold = hoverMiddleY * 1.5; // Switch closer to the top when dragging upwards
+        const hoverDownwardThreshold = hoverMiddleY * 0.5; // Switch closer to the bottom when dragging downwards
+
         const clientOffset = monitor.getClientOffset();
         const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
 
-        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        // Dragging up
+        if (dragIndex < hoverIndex && hoverClientY < hoverDownwardThreshold) {
           return;
         }
 
-        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        // Dragging down
+        if (dragIndex > hoverIndex && hoverClientY > hoverUpwardThreshold) {
           return;
         }
 
