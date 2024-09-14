@@ -63,14 +63,17 @@ export function JobContextProvider({ children }: JobContextProviderProps) {
     if (!job?.description || !allSkillAliases.length) return [];
 
     const splitJobDescription: string[] =
-      job?.description.match(/(?:[A-Za-z0-9#+-\/]+|\S)/g) || [];
+      job?.description.match(
+        /(?:[A-Za-z0-9#]+(?:\.[A-Za-z]+|\+\+)?|[A-Za-z0-9#]+|[.,])/g
+      ) || [];
 
-    const keyWordsInDescription = allSkillAliases.filter((word) =>
-      splitJobDescription.includes(word)
-    );
+    const keyWordsInDescription = allSkillAliases.filter((word) => {
+      console.log(word, splitJobDescription.includes(word));
+      return splitJobDescription.includes(word);
+    });
+
     return keyWordsInDescription;
   }, [job?.description, allSkillAliases]);
-
   const value = {
     job,
     setJob,
