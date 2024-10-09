@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { supabase } from "../clients/supabase";
@@ -26,6 +26,7 @@ export const Experience = ({
   job: Job;
 }) => {
   const { resume, setResume } = useSubmissionContext();
+  const [unusedBullets, setUnusedBullets] = useState<Bullet[]>([]);
 
   const experienceId = index + 1;
   const resumeEntryValues = resume[index].values as Bullet[];
@@ -65,13 +66,19 @@ export const Experience = ({
           throw new Error("Issue with cohere response text");
         }
 
-        // console.log("cohere ranking", split[1]);
         const ranking: Bullet[] = split[1]
           .trim()
           .split(",")
           .map((rank: string) => {
             return bullets[parseInt(rank) - 1];
           });
+        const unusedBullets = bullets.filter((bullet) => {
+          return !ranking
+            .map((rankedBullet) => rankedBullet.id)
+            .includes(bullet.id);
+        });
+
+        setUnusedBullets(unusedBullets);
         setResume((prev: ResumeEntry[]) => {
           const dupeMockResume = [...prev];
           dupeMockResume[index].values = ranking;
@@ -98,13 +105,13 @@ export const Experience = ({
 
   const deleteBullet = (deleteIndex: number) => {
     const newBullets = [...resumeEntryValues];
-    newBullets.splice(deleteIndex, 1);
-    console.log(newBullets);
+    const deletedBullets = newBullets.splice(deleteIndex, 1);
     setResume((prev: ResumeEntry[]) => {
       const dupeNewForm = [...prev];
       dupeNewForm[index].values = newBullets;
       return dupeNewForm;
     });
+    setUnusedBullets((prev) => [...prev, ...deletedBullets]);
   };
 
   const addBullet = (bulletContent: string) => {
@@ -192,11 +199,21 @@ export const Experience = ({
     );
   };
 
+  const moveFromUnused = (bullet: Bullet) => {
+    const newSkills = [...resumeEntryValues, bullet];
+    setResume((prev: ResumeEntry[]) => {
+      const dupeNewForm = [...prev];
+      dupeNewForm[index].values = newSkills;
+      return dupeNewForm;
+    });
+    setUnusedBullets((prev) => prev.filter((s) => s.id !== bullet.id));
+  };
+
   if (!selected) {
     return null;
   }
 
-  if (!resume[index].values.length) {
+  if (!resume[index].values.length && !unusedBullets.length) {
     return <div>loading...</div>;
   }
 
@@ -204,9 +221,21 @@ export const Experience = ({
     <DndProvider backend={HTML5Backend}>
       <section className="flex flex-col flex-1 p-4 border overflow-hidden w-full gap-2">
         <h2>{resume[index].title}</h2>
-        <ul className="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
+        <ul className="flex-[2_2_0%] overflow-y-auto flex flex-col gap-1 px-3">
           {resumeEntryValues.map((bullet, index) => (
             <BulletItem key={bullet.id} bullet={bullet} index={index} />
+          ))}
+        </ul>
+        <h3>unused</h3>
+        <ul className="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
+          {unusedBullets.map((bullet) => (
+            <li
+              onClick={() => moveFromUnused(bullet)}
+              key={`unused-skill-${bullet.id}`}
+              className="relative border-2 border-dashed border-gray-400 p-2 rounded-md cursor-move"
+            >
+              {bullet.content}
+            </li>
           ))}
         </ul>
         <form>

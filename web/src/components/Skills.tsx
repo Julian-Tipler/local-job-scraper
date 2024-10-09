@@ -76,16 +76,16 @@ export const Skills = ({
     });
   };
 
-  const deleteSkill = (index: number) => {
+  const deleteSkill = (deleteIndex: number) => {
     const newSkills = [...resumeEntryValues];
-    newSkills.splice(index, 1);
+    const deletedSkills = newSkills.splice(deleteIndex, 1);
     setResume((prev: ResumeEntry[]) => {
       console.log(newSkills, prev);
       const dupeNewForm = [...prev];
       dupeNewForm[resumeIndex].values = newSkills;
       return dupeNewForm;
     });
-    setUnusedUserSkills((prev) => [...prev, resumeEntryValues[index]]);
+    setUnusedUserSkills((prev) => [...prev, ...deletedSkills]);
   };
 
   const addSkill = (skillContent: string) => {
@@ -179,6 +179,10 @@ export const Skills = ({
 
   if (!selected) {
     return null;
+  }
+
+  if (!resume[resumeIndex].values.length && !unusedUserSkills.length) {
+    return <div>loading...</div>;
   }
 
   return (
