@@ -15,8 +15,8 @@ type ScrapeMap = {
 
 const SCRAPE_MAP: ScrapeMap = {
   "Microsoft": scrapeMicrosoft,
-  "BuiltIn": scrapeBuiltIn,
-  "Dice": scrapeDice,
+  // "BuiltIn": scrapeBuiltIn,
+  // "Dice": scrapeDice,
 };
 
 export const setUpChronScrape = async () => {
@@ -34,7 +34,9 @@ export const complete = async (companies: string[]) => {
     for (const company of companies) {
       try {
         const scrape = SCRAPE_MAP[company];
+        // 
         const newJobs = await scrape();
+        
         const sortedNewJobs = await sortByRelevance(newJobs);
         const savedJobs = await saveNewJobsToSupabase(sortedNewJobs);
         if (savedJobs.length > 0) {

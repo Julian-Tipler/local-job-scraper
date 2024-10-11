@@ -10,6 +10,8 @@ export const filterExistingJobs = async (
     .from("jobs")
     .select("title, url");
 
+  console.log(existingJobs);
+
   if (existingJobsError) {
     handleSupabaseError(
       existingJobsError,

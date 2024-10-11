@@ -5,7 +5,6 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../util/types";
 import { filterExistingJobs } from "../helpers/filter-existing-jobs";
-import { saveNewJobsToSupabase } from "../helpers/save-new-jobs-to-supabase";
 
 const WEBSITE = "Microsoft";
 const SITE_URL =
