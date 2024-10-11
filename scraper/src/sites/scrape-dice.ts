@@ -1,9 +1,7 @@
 import puppeteer from "puppeteer-extra";
-import { filterExistingJobs } from "../helpers/filter-existing-jobs";
 import { Browser } from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Job } from "../util/types";
-import { saveNewJobsToSupabase } from "../helpers/save-new-jobs-to-supabase";
 
 const WEBSITE = "Dice";
 const SITE_URL =
@@ -41,43 +39,6 @@ export const scrapeDice = async (browser: Browser) => {
       console.info(`No jobs found on ${WEBSITE}`);
     }
     return newJobs;
-
-    // const newJobs = await filterExistingJobs(jobs, WEBSITE);
-    // for (const newJob of newJobs) {
-    //   console.info(`Fetching job description for ${newJob.title}`);
-    //   try {
-    //     await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
-
-    //     const number = Math.floor(Math.random() * 1000) + 1;
-    //     await new Promise((resolve) => setTimeout(resolve, 1000 + number));
-    //     // await page.screenshot({
-    //     //   path: `${new Date()}.png`,
-    //     //   fullPage: true,
-    //     // });
-
-    //     const jobDescriptionHtml: any = await page.evaluate(() => {
-    //       const jobDescElement = document.querySelector(
-    //         "#jobDescription",
-    //       );
-    //       return jobDescElement ? jobDescElement.innerHTML : "";
-    //     });
-    //     if (jobDescriptionHtml) {
-    //       // Replace certain HTML tags with line breaks
-    //       const jobDescription = jobDescriptionHtml
-    //         .replace(/<br\s*\/?>/gi, "\n")
-    //         .replace(/<\/p>/gi, "\n\n")
-    //         .replace(/<\/?[^>]+(>|$)/g, "") // Remove remaining HTML tags
-    //         .trim();
-    //       newJob.description = jobDescription;
-    //     }
-    //     // Add job description to the job object
-    //   } catch (jobError) {
-    //     console.error(
-    //       `Error fetching job description for ${newJob.title}: ${jobError.message}`,
-    //     );
-    //   }
-    // }
-    // return newJobs;
   } catch (error) {
     console.error(`Error scraping ${WEBSITE}: ${error.message}`);
 

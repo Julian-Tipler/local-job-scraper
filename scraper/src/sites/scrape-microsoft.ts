@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../util/types";
 

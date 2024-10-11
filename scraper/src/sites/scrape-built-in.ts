@@ -1,10 +1,6 @@
 import cheerio from "cheerio";
-import { filterExistingJobs } from "../helpers/filter-existing-jobs";
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Browser } from "puppeteer";
 import { Job } from "../util/types";
-import { saveNewJobsToSupabase } from "../helpers/save-new-jobs-to-supabase";
 
 const WEBSITE = "BuiltIn";
 const SITE_URL =
