@@ -9,11 +9,14 @@ type JobEntries = {
 export const notify = async (
   newJobsObject: JobEntries,
 ) => {
-  if (Object.keys(newJobsObject).length === 0) {
+  if (
+    Object.keys(newJobsObject).length === 0 ||
+    Object.entries(newJobsObject).length === 0
+  ) {
     console.log(`No new jobs to notify`);
     return;
   }
-  
+
   const { default: PushBullet } = await import("pushbullet");
 
   let notificationString = ``;

@@ -10,6 +10,10 @@ import { Browser } from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { jobDescriptionMicrosoft } from "./sites/job-description-microsoft";
+import { scrapeBuiltIn } from "./sites/scrape-built-in";
+import { jobDescriptionBuiltIn } from "./sites/job-description-built-in";
+import { scrapeDice } from "./sites/scrape-dice";
+import { jobDescriptionDice } from "./sites/job-description-dice";
 dotenv.config();
 
 type ScrapeMap = {
@@ -25,8 +29,11 @@ const SCRAPE_MAP: ScrapeMap = {
     scrape: scrapeMicrosoft,
     description: jobDescriptionMicrosoft,
   },
-  // "BuiltIn": scrapeBuiltIn,
-  // "Dice": scrapeDice,
+  "BuiltIn": { scrape: scrapeBuiltIn, description: jobDescriptionBuiltIn },
+  "Dice": {
+    scrape: scrapeDice,
+    description: jobDescriptionDice,
+  },
 };
 
 export const setUpChronScrape = async () => {
@@ -74,7 +81,7 @@ export const complete = async (companies: string[]) => {
         activeCompanies.delete(company);
       }
     }
-    notify(allNewJobs);
+    // notify(allNewJobs);
   } catch (error) {
     console.error("General error in complete function:", error);
   }
