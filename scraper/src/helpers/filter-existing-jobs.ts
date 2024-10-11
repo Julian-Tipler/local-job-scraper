@@ -8,9 +8,7 @@ export const filterExistingJobs = async (
 ) => {
   const { data: existingJobs, error: existingJobsError } = await supabase
     .from("jobs")
-    .select("title, url");
-
-  console.log(existingJobs);
+    .select("title, url, description");
 
   if (existingJobsError) {
     handleSupabaseError(
@@ -20,7 +18,7 @@ export const filterExistingJobs = async (
   }
 
   const existingJobKeySet = new Set(
-    existingJobs.map((job) => `${job.title}-${new URL(job.url)}`),
+    existingJobs.map((job) => craftKey(job)),
   );
 
   if (!jobs?.filter) {
@@ -29,16 +27,19 @@ export const filterExistingJobs = async (
 
   const uniqueFilteredSet = jobs.filter((job, index, self) =>
     // Doesn't exist in database
-    !existingJobKeySet.has(`${job.title}-${new URL(job.url)}`) &&
+    !existingJobKeySet.has(craftKey(job)) &&
     // Doesn't exist in the current array
     index ===
       self.findIndex((t) =>
-        `${t.title}-${new URL(t.url)}` ===
-          `${job.title}-${new URL(job.url)}`
+        craftKey(t) ===
+          craftKey(job)
       )
   );
 
   const newJobs = Array.from(uniqueFilteredSet);
+  console.log("old jobs", jobs.length, "new jobs", newJobs.length);
 
   return newJobs;
 };
+
+const craftKey = (job: Job) => `${job.title}-${new URL(job.url)}`;

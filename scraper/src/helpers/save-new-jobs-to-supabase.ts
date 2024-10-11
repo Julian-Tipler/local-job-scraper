@@ -15,7 +15,14 @@ export const saveNewJobsToSupabase = async (
     throw error;
   }
 
-  const jobsData: Job[] = data as Job[]; // Type assertion
+  if (data.length > 0) {
+    console.log("savedJobs", data.length);
+  }
+
+  let jobsData: Job[] = data as Job[]; // Type assertion
+  if (!jobsData) {
+    jobsData = [];
+  }
 
   return jobsData;
 };
