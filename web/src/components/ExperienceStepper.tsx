@@ -117,7 +117,7 @@ export const ExperienceStepper = () => {
               : "bg-green-500 hover:bg-green-700"
           }`}
         >
-          Submit
+          Create
         </button>
       </div>
     </div>

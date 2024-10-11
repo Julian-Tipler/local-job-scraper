@@ -1,14 +1,14 @@
 import cron from "node-cron";
 import dotenv from "dotenv";
-import { scrapeMicrosoft } from "./sites/scrape-microsoft";
 import { Job } from "./util/types";
 import { saveNewJobsToSupabase } from "./helpers/save-new-jobs-to-supabase";
-import { notify } from "./helpers/notify";
 import { sortByRelevance } from "./helpers/sort-by-relevance";
 import { filterExistingJobs } from "./helpers/filter-existing-jobs";
 import { Browser } from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { notify } from "./helpers/notify";
+import { scrapeMicrosoft } from "./sites/scrape-microsoft";
 import { jobDescriptionMicrosoft } from "./sites/job-description-microsoft";
 import { scrapeBuiltIn } from "./sites/scrape-built-in";
 import { jobDescriptionBuiltIn } from "./sites/job-description-built-in";
@@ -37,8 +37,7 @@ const SCRAPE_MAP: ScrapeMap = {
 };
 
 export const setUpChronScrape = async () => {
-  cron.schedule("* * * * *", async () => {
-    // cron.schedule("*/5 * * * *", async () => {
+  cron.schedule("*/5 * * * *", async () => {
     console.info("Running cron job");
     await complete(Object.keys(SCRAPE_MAP));
   });
@@ -71,7 +70,9 @@ export const complete = async (companies: string[]) => {
         const sortedNewJobs = await sortByRelevance(newJobsWithDescription);
 
         const savedJobs = await saveNewJobsToSupabase(sortedNewJobs);
-        allNewJobs[company] = savedJobs;
+        if (savedJobs.length > 0) {
+          allNewJobs[company] = savedJobs;
+        }
       } catch (error) {
         console.error(`Error with ${company}:`, error);
       } finally {
@@ -81,7 +82,7 @@ export const complete = async (companies: string[]) => {
         activeCompanies.delete(company);
       }
     }
-    // notify(allNewJobs);
+    notify(allNewJobs);
   } catch (error) {
     console.error("General error in complete function:", error);
   }

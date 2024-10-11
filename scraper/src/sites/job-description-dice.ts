@@ -34,8 +34,6 @@ export const jobDescriptionDice = async (
           .trim();
         newJob.description = jobDescription;
       }
-
-      return newJobs;
     } catch (error) {
       throw new Error(`issue fetching job description: ${error}`);
     }

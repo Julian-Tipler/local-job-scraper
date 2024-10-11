@@ -9,9 +9,9 @@ type JobEntries = {
 export const notify = async (
   newJobsObject: JobEntries,
 ) => {
+  console.log("newJobsObject", newJobsObject);
   if (
-    Object.keys(newJobsObject).length === 0 ||
-    Object.entries(newJobsObject).length === 0
+    Object.keys(newJobsObject).length === 0
   ) {
     console.log(`No new jobs to notify`);
     return;
