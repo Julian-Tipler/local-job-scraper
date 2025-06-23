@@ -16,7 +16,6 @@ export const scrapeMicrosoft = async (browser: Browser) => {
     await page.waitForSelector('[aria-label*="Job item"]', { timeout: 20000 });
 
     const recentJobs: Job[] = await page.evaluate(() => {
-      console.log("Evaluating page for job cards ***");
       const jobCards = Array.from(
         document.querySelectorAll('[aria-label*="Job item"]'),
       );

@@ -1,5 +1,4 @@
 // import { setUpWatcher } from "./helpers/set-up-watcher";
-console.log("YOOO")
 import dotenv from "dotenv";
 dotenv.config();
 import { setUpChronScrape } from "./set-up-chron-scrape";

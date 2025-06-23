@@ -35,6 +35,7 @@ export const notify = async (
       ).join("\n")
     }`;
   }
+  console.log('%cThere are new jobs available!', 'color: blue; font-weight: bold;');
 
   const pusher = new PushBullet(apiKey);
   pusher.note(

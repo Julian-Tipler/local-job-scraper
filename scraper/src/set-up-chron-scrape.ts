@@ -50,7 +50,7 @@ export const complete = async (companies: string[]) => {
     const allNewJobs = {};
     for (const company of companies) {
       if (activeCompanies.has(company)) {
-        console.log(`${company} is currently being scraped, skipping...`);
+        console.warn(`${company} is currently being scraped, skipping...`);
         continue;
       }
 
@@ -67,7 +67,6 @@ export const complete = async (companies: string[]) => {
         const recentJobs = await scrape(browser);
         const newJobs = await filterExistingJobs(recentJobs, company);
         const newJobsWithDescription = await description(browser, newJobs);
-        console.log("Sorting jobs by relevance...");
         const sortedNewJobs = await sortByRelevance(newJobsWithDescription);
 
         const savedJobs = await saveNewJobsToSupabase(sortedNewJobs);

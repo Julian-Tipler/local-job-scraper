@@ -4,6 +4,7 @@ import { Job } from "../util/types";
 export const sortByRelevance = async (
   newJobs: Job[],
 ) => {
+  console.log("Sorting jobs by relevance...");
   const myExperienceEmbedding = await generateEmbeddings(MY_EXPERIENCE);
 
   const relevanceScores = await Promise.all(newJobs.map(async (jobTitle) => {
