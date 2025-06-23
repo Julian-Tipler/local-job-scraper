@@ -29,15 +29,15 @@ const SCRAPE_MAP: ScrapeMap = {
     scrape: scrapeMicrosoft,
     description: jobDescriptionMicrosoft,
   },
-  "BuiltIn": { scrape: scrapeBuiltIn, description: jobDescriptionBuiltIn },
-  "Dice": {
-    scrape: scrapeDice,
-    description: jobDescriptionDice,
-  },
+  // "BuiltIn": { scrape: scrapeBuiltIn, description: jobDescriptionBuiltIn },
+  // "Dice": {
+  //   scrape: scrapeDice,
+  //   description: jobDescriptionDice,
+  // },
 };
 
 export const setUpChronScrape = async () => {
-  cron.schedule("*/5 * * * *", async () => {
+  cron.schedule("*/10 * * * *", async () => {
     console.info("Running cron job");
     await complete(Object.keys(SCRAPE_MAP));
   });
@@ -67,6 +67,7 @@ export const complete = async (companies: string[]) => {
         const recentJobs = await scrape(browser);
         const newJobs = await filterExistingJobs(recentJobs, company);
         const newJobsWithDescription = await description(browser, newJobs);
+        console.log("Sorting jobs by relevance...");
         const sortedNewJobs = await sortByRelevance(newJobsWithDescription);
 
         const savedJobs = await saveNewJobsToSupabase(sortedNewJobs);

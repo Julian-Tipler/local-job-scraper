@@ -11,7 +11,7 @@ export const jobDescriptionMicrosoft = async (
     try {
       const page = await browser.newPage();
       await page.goto(newJob.url, { waitUntil: "domcontentloaded" });
-      await page.waitForSelector(".fcUffXZZoGt8CJQd8GUl", { timeout: 20000 });
+      await page.waitForSelector(".fcUffXZZoGt8CJQd8GUl", { timeout: 60000 });
 
       const jobDescriptionHtml: any = await page.evaluate(() => {
         const jobDescription = document.querySelector(

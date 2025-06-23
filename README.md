@@ -6,3 +6,9 @@ Knows what input box is focused and types the answer to the question with AI
 Short summary creation on Job
 
 Separate bullets and skills into separate tables. Both point to Experience still
+
+## Optimizations
+
+Upgrade node and make sure it works with arm64.
+Puppeteer must be run with a version on Node built for arm64.
+old v is 20.12.2 intel

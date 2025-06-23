@@ -5,21 +5,21 @@ import { Job } from "../util/types";
 
 const WEBSITE = "Microsoft";
 const SITE_URL =
-  "https://jobs.careers.microsoft.com/global/en/search?q=software%20engineer&lc=United%20States&ws=Up%20to%20100%25%20work%20from%20home&l=en_us&pg=1&pgSz=20&o=Relevance&flt=true";
+  "https://jobs.careers.microsoft.com/global/en/search?q=software%20engineer&lc=United%20States&exp=Experienced%20professionals&ws=Up%20to%20100%25%20work%20from%20home&l=en_us&pg=1&pgSz=20&o=Relevance&flt=true";
 
 export const scrapeMicrosoft = async (browser: Browser) => {
   console.info("Starting Microsoft Job 💾");
 
   try {
     const page = await browser.newPage();
-    await page.goto(SITE_URL, { waitUntil: "networkidle2", timeout: 20000 });
+    await page.goto(SITE_URL, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector('[aria-label*="Job item"]', { timeout: 20000 });
 
     const recentJobs: Job[] = await page.evaluate(() => {
+      console.log("Evaluating page for job cards ***");
       const jobCards = Array.from(
         document.querySelectorAll('[aria-label*="Job item"]'),
       );
-
       return jobCards.map((jobCard) => {
         const ariaLabel = jobCard.getAttribute("aria-label");
         if (!ariaLabel) throw new Error("No aria-label found");

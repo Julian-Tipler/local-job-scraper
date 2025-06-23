@@ -6,6 +6,7 @@ export const filterExistingJobs = async (
   jobs: Job[],
   website: string,
 ) => {
+  return jobs
   const { data: existingJobs, error: existingJobsError } = await supabase
     .from("jobs")
     .select("title, url, description");
